@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: reservas_postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: reservas_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - reservas_network
+
+  app:
+    build: .
+    container_name: reservas_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/reservas_db
+      - SECRET_KEY=your-secret-key-here-make-it-long-and-secure
+      - DEBUG=True
+    depends_on:
+      - postgres
+    networks:
+      - reservas_network
+    volumes:
+      - ./app:/app/app
+
+volumes:
+  postgres_data:
+
+networks:
+  reservas_network:
+    driver: bridge

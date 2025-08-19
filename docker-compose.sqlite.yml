@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlite
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/reservas.db
+      - SECRET_KEY=tu-clave-secreta-muy-larga-y-segura-para-sqlite
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - APP_NAME=Reservas Microservice (SQLite)
+      - DEBUG=True
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - ./app:/app/app  # Para desarrollo con reload
+      - ./data:/app/data  # Persistir base de datos SQLite
+      - ./migrations:/app/migrations
+      - ./scripts:/app/scripts
+    working_dir: /app
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        python scripts/init_data.py &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  data:
+    driver: local

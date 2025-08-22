@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from ..db import get_db
+from ..db_sqlite_clean import get_db
 from ..services.reserva_service import ReservaService
 from ..schemas.reserva import ReservaCreate, ReservaResponse, ReservaUpdate, DisponibilidadResponse
 from ..schemas.base import BaseResponse
@@ -12,6 +12,16 @@ router = APIRouter(prefix="/reservas", tags=["reservas"])
 def create_reserva(reserva: ReservaCreate, db: Session = Depends(get_db)):
     """Crear una nueva reserva"""
     return ReservaService.create_reserva(db, reserva)
+
+@router.get("/listar", response_model=List[ReservaResponse])
+def listar_reservas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Listar todas las reservas"""
+    return ReservaService.get_all_reservas(db, skip=skip, limit=limit)
+
+@router.get("/disponibilidad", response_model=DisponibilidadResponse)
+def get_disponibilidad(servicio_id: int, fecha: str, db: Session = Depends(get_db)):
+    """Obtener disponibilidad de un servicio para una fecha específica"""
+    return ReservaService.get_disponibilidad(db, servicio_id, fecha)
 
 @router.get("/{reserva_id}", response_model=ReservaResponse)
 def get_reserva(reserva_id: int, db: Session = Depends(get_db)):
@@ -34,7 +44,3 @@ def cancel_reserva(reserva_id: int, db: Session = Depends(get_db)):
     """Cancelar una reserva"""
     return ReservaService.cancel_reserva(db, reserva_id)
 
-@router.get("/disponibilidad", response_model=DisponibilidadResponse)
-def get_disponibilidad(servicio_id: int, fecha: str, db: Session = Depends(get_db)):
-    """Obtener disponibilidad de un servicio para una fecha específica"""
-    return ReservaService.get_disponibilidad(db, servicio_id, fecha)

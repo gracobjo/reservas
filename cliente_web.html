@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Sistema de Precios Dinámicos - Reservas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <style>
+        /* Forzar que solo se muestre una pestaña a la vez */
+        .tab-pane:not(.show) {
+            display: none !important;
+        }
+        .tab-pane.show {
+            display: block !important;
+        }
+        
+        /* Asegurar que las pestañas inactivas estén completamente ocultas */
+        .tab-pane:not(.show.active) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+        
+        /* Asegurar que solo la pestaña activa sea visible */
+        .tab-pane.show.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            left: auto !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="bg-primary text-white py-4 mb-4">
+            <div class="container">
+                <h1 class="display-4">
+                    <i class="fas fa-chart-line me-3"></i>
+                    Sistema de Precios Dinámicos
+                </h1>
+                <p class="lead">Gestión inteligente de precios para reservas</p>
+                <div class="alert alert-info">
+                    <strong>🌐 Conectado a:</strong> <span id="apiStatus">Verificando conexión...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard"
+                        type="button" role="tab">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator"
+                        type="button" role="tab">
+                        <i class="fas fa-calculator me-2"></i>Calculadora
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                        type="button" role="tab">
+                        <i class="fas fa-history me-2"></i>Historial
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="quick-rules-tab" data-bs-toggle="tab" data-bs-target="#quick-rules"
+                        type="button" role="tab">
+                        <i class="fas fa-cogs me-2"></i>Gestión de Reglas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications"
+                        type="button" role="tab">
+                        <i class="fas fa-bell me-2"></i>Notificaciones
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reservas-tab" data-bs-toggle="tab" data-bs-target="#reservas" type="button" role="tab">
+                        <i class="fas fa-calendar-check me-2"></i>Gestión de Reservas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="calendario-tab" data-bs-toggle="tab" data-bs-target="#calendario" type="button" role="tab">
+                        <i class="fas fa-calendar-alt me-2"></i>Calendario
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
+                        type="button" role="tab">
+                        <i class="fas fa-concierge-bell me-2"></i>Gestión Servicios
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resources"
+                        type="button" role="tab">
+                        <i class="fas fa-building me-2"></i>Gestión Recursos
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="mainTabsContent">
+                <!-- Dashboard Tab -->
+                <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title">Total Reglas</h4>
+                                            <h2 id="totalRules">-</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-cogs fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title">Reglas Activas</h4>
+                                            <h2 id="activeRules">-</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title">Servicios</h4>
+                                            <h2 id="totalServices">-</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-concierge-bell fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title">Recursos</h4>
+                                            <h2 id="totalResources">-</h2>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-building fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-list me-2"></i>Reglas Recientes</h5>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2"
+                                            onclick="app.exportDashboardStats()">
+                                            <i class="fas fa-download me-2"></i>Exportar Stats
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentRulesList" class="list-group">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Cargando reglas...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculator Tab -->
+                <div class="tab-pane fade" id="calculator" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-calculator me-2"></i>Calculadora de Precios</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="priceCalculatorForm">
+                                        <div class="mb-3">
+                                            <label for="calcService" class="form-label">Servicio</label>
+                                            <select class="form-select" id="calcService" required>
+                                                <option value="">Seleccionar servicio...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calcResource" class="form-label">Recurso</label>
+                                            <select class="form-select" id="calcResource" required>
+                                                <option value="">Seleccionar recurso...</option>
+                                            </select>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="calcDate" class="form-label">Fecha</label>
+                                                    <input type="date" class="form-control" id="calcDate" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="calcTime" class="form-label">Hora</label>
+                                                    <input type="time" class="form-control" id="calcTime" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="calcDuration" class="form-label">Duración</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" id="calcDuration"
+                                                            value="1" min="1" max="168" step="1" required>
+                                                        <select class="form-select" id="calcDurationUnit"
+                                                            style="max-width: 120px;">
+                                                            <option value="hours">Horas</option>
+                                                            <option value="days">Días</option>
+                                                            <option value="nights">Noches</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-text text-muted" id="durationHelp">
+                                                        Selecciona un servicio para ver las opciones de duración
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="calcParticipants"
+                                                        class="form-label">Participantes</label>
+                                                    <input type="number" class="form-control" id="calcParticipants"
+                                                        value="1" min="1" max="100" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calcClientType" class="form-label">Tipo de Cliente</label>
+                                            <select class="form-select" id="calcClientType">
+                                                <option value="regular">Regular</option>
+                                                <option value="vip">VIP</option>
+                                                <option value="premium">Premium</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-calculator me-2"></i>Calcular Precio
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-receipt me-2"></i>Resultado del Cálculo</h5>
+                                </div>
+                                <div class="card-body" id="calculationResult">
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-calculator fa-3x mb-3"></i>
+                                        <p>Ingresa los datos y calcula el precio dinámico</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-history me-2"></i>Historial de Cálculos</h5>
+                                    <div>
+                                        <button class="btn btn-outline-primary btn-sm me-2"
+                                            onclick="app.exportHistoryToCSV()">
+                                            <i class="fas fa-download me-2"></i>Exportar CSV
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="app.clearHistory()">
+                                            <i class="fas fa-trash me-2"></i>Limpiar Historial
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="historyContainer" class="list-group">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-history fa-2x mb-3"></i>
+                                            <p>No hay cálculos en el historial</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gestión de Reglas Tab -->
+                <div class="tab-pane fade" id="quick-rules" role="tabpanel">
+                    <h3 class="mb-4"><i class="fas fa-cogs me-2"></i>Gestión de Reglas de Precios</h3>
+
+                    <!-- Lista de Reglas Existentes -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div
+                                    class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-list me-2"></i>Reglas Existentes</h5>
+                                    <button class="btn btn-light btn-sm" onclick="app.refreshRulesList()">
+                                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="rulesListContainer">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Cargando reglas...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-3"><i class="fas fa-plus me-2"></i>Crear Nuevas Reglas</h4>
+
+                    <div class="row">
+                        <!-- Hora Pico -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5><i class="fas fa-clock me-2"></i>Regla de Hora Pico</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="horaPicoForm">
+                                        <div class="mb-3">
+                                            <label for="hpName" class="form-label">Nombre de la Regla</label>
+                                            <input type="text" class="form-control" id="hpName"
+                                                placeholder="Ej: Hora Pico Tarde" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="hpStartTime" class="form-label">Hora Inicio</label>
+                                                    <input type="time" class="form-control" id="hpStartTime"
+                                                        value="17:00" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="hpEndTime" class="form-label">Hora Fin</label>
+                                                    <input type="time" class="form-control" id="hpEndTime" value="20:00"
+                                                        required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="hpRecargo" class="form-label">Porcentaje de Recargo</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="hpRecargo" value="25"
+                                                    min="0" max="100" step="0.1" required>
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Días de la Semana</label>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpLunes"
+                                                            checked>
+                                                        <label class="form-check-label" for="hpLunes">Lunes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpMartes"
+                                                            checked>
+                                                        <label class="form-check-label" for="hpMartes">Martes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpMiercoles"
+                                                            checked>
+                                                        <label class="form-check-label"
+                                                            for="hpMiercoles">Miércoles</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpJueves"
+                                                            checked>
+                                                        <label class="form-check-label" for="hpJueves">Jueves</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpViernes"
+                                                            checked>
+                                                        <label class="form-check-label" for="hpViernes">Viernes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpSabado">
+                                                        <label class="form-check-label" for="hpSabado">Sábado</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="hpDomingo">
+                                                        <label class="form-check-label" for="hpDomingo">Domingo</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-warning w-100">
+                                            <i class="fas fa-bolt me-2"></i>Crear Regla Hora Pico
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Descuento por Anticipación -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-calendar-check me-2"></i>Descuento por Anticipación</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="anticipacionForm">
+                                        <div class="mb-3">
+                                            <label for="antName" class="form-label">Nombre de la Regla</label>
+                                            <input type="text" class="form-control" id="antName"
+                                                placeholder="Ej: Descuento Reserva Anticipada" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="antDias" class="form-label">Días Mínimos de Anticipación</label>
+                                            <input type="number" class="form-control" id="antDias" value="7" min="1"
+                                                max="365" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="antDescuento" class="form-label">Porcentaje de Descuento</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="antDescuento" value="15"
+                                                    min="0" max="100" step="0.1" required>
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-calendar-check me-2"></i>Crear Regla de Descuento
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nueva Regla de Fin de Semana -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-calendar-week me-2"></i>Recargo Fin de Semana</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="finSemanaForm">
+                                        <div class="mb-3">
+                                            <label for="fsName" class="form-label">Nombre de la Regla</label>
+                                            <input type="text" class="form-control" id="fsName"
+                                                placeholder="Ej: Recargo Fin de Semana" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="fsRecargo" class="form-label">Porcentaje de Recargo</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="fsRecargo" value="30"
+                                                    min="0" max="100" step="0.1" required>
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Aplicar a:</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="fsSabado" checked>
+                                                <label class="form-check-label" for="fsSabado">Sábados</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="fsDomingo" checked>
+                                                <label class="form-check-label" for="fsDomingo">Domingos</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-info w-100">
+                                            <i class="fas fa-calendar-week me-2"></i>Crear Regla Fin de Semana
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <h3 class="mb-4"><i class="fas fa-bell me-2"></i>Configuración de Notificaciones</h3>
+
+                    <div class="row">
+                        <!-- Configuración General -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5><i class="fas fa-cog me-2"></i>Configuración General</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="generalNotificationsForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Tipos de Notificaciones</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="confirmationsEnabled" checked>
+                                                <label class="form-check-label" for="confirmationsEnabled">
+                                                    Confirmaciones automáticas
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="remindersEnabled"
+                                                    checked>
+                                                <label class="form-check-label" for="remindersEnabled">
+                                                    Recordatorios automáticos
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="systemAlertsEnabled"
+                                                    checked>
+                                                <label class="form-check-label" for="systemAlertsEnabled">
+                                                    Alertas del sistema
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="autoDismissTime" class="form-label">Auto-ocultar después de
+                                                (segundos)</label>
+                                            <select class="form-select" id="autoDismissTime">
+                                                <option value="3000">3 segundos</option>
+                                                <option value="5000" selected>5 segundos</option>
+                                                <option value="10000">10 segundos</option>
+                                                <option value="0">No auto-ocultar</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-save me-2"></i>Guardar Configuración
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recordatorios Programados -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-clock me-2"></i>Recordatorios Programados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6>Recordatorios Activos:</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Verificación de salud del
+                                                sistema (cada 30 min)</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Revisión de reglas (diario
+                                                a las 9:00 AM)</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Exportación de datos
+                                                (semanal los lunes)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="mb-3">
+                                        <button class="btn btn-outline-success btn-sm me-2"
+                                            onclick="app.testReminder()">
+                                            <i class="fas fa-bell me-2"></i>Probar Recordatorio
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm"
+                                            onclick="app.clearAllReminders()">
+                                            <i class="fas fa-times me-2"></i>Limpiar Recordatorios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Historial de Notificaciones -->
+                        <div class="col-md-8 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-history me-2"></i>Historial de Notificaciones</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="notificationHistoryContainer">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-bell fa-2x mb-3"></i>
+                                            <p>No hay notificaciones en el historial</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas de Notificaciones -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5><i class="fas fa-chart-bar me-2"></i>Estadísticas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <div class="mb-3">
+                                            <h4 id="totalNotifications">0</h4>
+                                            <small class="text-muted">Total Notificaciones</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <h4 id="unreadNotifications">0</h4>
+                                            <small class="text-muted">No Leídas</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <h4 id="todayNotifications">0</h4>
+                                            <small class="text-muted">Hoy</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-warning btn-sm w-100" onclick="app.markAllAsRead()">
+                                        <i class="fas fa-check-double me-2"></i>Marcar Todas como Leídas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración Avanzada -->
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-dark text-white">
+                                    <h5><i class="fas fa-sliders-h me-2"></i>Configuración Avanzada</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="soundEnabled"
+                                                    checked>
+                                                <label class="form-check-label" for="soundEnabled">
+                                                    Sonidos de notificación
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="desktopNotificationsEnabled">
+                                                <label class="form-check-label" for="desktopNotificationsEnabled">
+                                                    Notificaciones del escritorio
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="priorityNotificationsEnabled" checked>
+                                                <label class="form-check-label" for="priorityNotificationsEnabled">
+                                                    Notificaciones prioritarias
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-outline-primary btn-sm me-2"
+                                                onclick="app.requestNotificationPermission()">
+                                                <i class="fas fa-permission me-2"></i>Solicitar Permisos
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm"
+                                                onclick="app.resetNotificationSettings()">
+                                                <i class="fas fa-undo me-2"></i>Restablecer
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-end">
+                                            <button class="btn btn-success btn-sm"
+                                                onclick="app.exportNotificationSettings()">
+                                                <i class="fas fa-download me-2"></i>Exportar Configuración
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Calendario -->
+                <div class="tab-pane fade" id="calendario" role="tabpanel">
+                    <div class="container-fluid">
+                        <!-- Controles del Calendario -->
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                           <div class="btn-group" role="group">
+               <button type="button" class="btn btn-outline-primary" id="btnVistaMensual">
+                   <i class="fas fa-calendar me-2"></i>Mensual
+               </button>
+               <button type="button" class="btn btn-outline-primary" id="btnVistaSemanal">
+                   <i class="fas fa-calendar-week me-2"></i>Semanal
+               </button>
+               <button type="button" class="btn btn-outline-primary" id="btnVistaDiaria">
+                   <i class="fas fa-calendar-day me-2"></i>Diaria
+               </button>
+           </div>
+                                <div class="btn-group ms-3" role="group">
+                                    <button type="button" class="btn btn-outline-secondary" id="btnAnterior">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="btnHoy">Hoy</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="btnSiguiente">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <h4 class="d-inline-block ms-3" id="calendarioTitulo">Agosto 2025</h4>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-end">
+                                    <select class="form-select me-2" id="filtroServicioCalendario" style="width: auto;">
+                                        <option value="">Todos los servicios</option>
+                                    </select>
+                                    <select class="form-select me-2" id="filtroRecursoCalendario" style="width: auto;">
+                                        <option value="">Todos los recursos</option>
+                                    </select>
+                                    <button class="btn btn-primary" id="btnActualizarCalendario">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Búsqueda Avanzada de Disponibilidad -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-search me-2"></i>Búsqueda Avanzada de Disponibilidad
+                                            <button class="btn btn-sm btn-outline-secondary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#busquedaAvanzada">
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                        </h6>
+                                    </div>
+                                    <div class="collapse" id="busquedaAvanzada">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Servicio</label>
+                                                    <select class="form-select" id="busquedaServicio">
+                                                        <option value="">Seleccionar servicio</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Recurso</label>
+                                                    <select class="form-select" id="busquedaRecurso">
+                                                        <option value="">Seleccionar recurso</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Fecha</label>
+                                                    <input type="date" class="form-control" id="busquedaFecha">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">Hora</label>
+                                                    <input type="time" class="form-control" id="busquedaHora">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label">&nbsp;</label>
+                                                    <button class="btn btn-primary w-100" id="btnBuscarDisponibilidad">
+                                                        <i class="fas fa-search me-1"></i>Buscar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3" id="resultadosDisponibilidad" style="display: none;">
+                                                <div class="alert alert-info">
+                                                    <h6><i class="fas fa-info-circle me-2"></i>Resultados de la búsqueda:</h6>
+                                                    <div id="disponibilidadResultados"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calendario Visual -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body p-0">
+                                        <!-- Vista Mensual -->
+                                        <div id="vistaMensual" class="calendario-vista">
+                                            <!-- Header del calendario -->
+                                            <div class="calendario-header">
+                                                <div class="calendario-dia-header">Dom</div>
+                                                <div class="calendario-dia-header">Lun</div>
+                                                <div class="calendario-dia-header">Mar</div>
+                                                <div class="calendario-dia-header">Mié</div>
+                                                <div class="calendario-dia-header">Jue</div>
+                                                <div class="calendario-dia-header">Vie</div>
+                                                <div class="calendario-dia-header">Sáb</div>
+                                            </div>
+                                            
+                                            <!-- Grid principal del calendario -->
+                                            <div id="calendarioMensual" class="calendario-grid">
+                                                <!-- Se llena dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Vista Semanal -->
+                                        <div id="vistaSemanal" class="calendario-vista" style="display: none;">
+                                            <div class="calendario-header" style="display: grid !important; grid-template-columns: 80px repeat(7, 1fr) !important; width: 100% !important; min-width: 800px !important;">
+                                                <div class="calendario-hora-header">Hora</div>
+                                                <div class="calendario-dia-header">Lun</div>
+                                                <div class="calendario-dia-header">Mar</div>
+                                                <div class="calendario-dia-header">Mié</div>
+                                                <div class="calendario-dia-header">Jue</div>
+                                                <div class="calendario-dia-header">Vie</div>
+                                                <div class="calendario-dia-header">Sáb</div>
+                                                <div class="calendario-dia-header">Dom</div>
+                                            </div>
+                                                                                         <div id="calendarioSemanal" class="calendario-grid-semanal" style="display: grid !important; grid-template-columns: 80px repeat(7, 1fr) !important; grid-template-rows: repeat(13, 80px) !important; width: 100% !important; min-width: 800px !important; min-height: 1040px; gap: 0;">
+                                                <!-- Se llena dinámicamente -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Vista Diaria -->
+                                        <div id="vistaDiaria" class="calendario-vista" style="display: none;">
+                                            <div class="calendario-header" style="display: grid !important; grid-template-columns: 80px 1fr !important; width: 100% !important; min-width: 800px !important;">
+                                                <div class="calendario-hora-header">Hora</div>
+                                                <div class="calendario-dia-header" id="calendarioDiaTitulo">Lunes, 18 de Agosto</div>
+                                            </div>
+                                            <div id="calendarioDiario" class="calendario-grid-diario" style="display: grid !important; grid-template-columns: 80px 1fr !important; width: 100% !important; min-width: 800px !important; min-height: 800px; gap: 0;">
+                                                <!-- Se llena dinámicamente -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel de Información de Reserva -->
+                        <div class="row mt-4" id="panelInfoReserva" style="display: none;">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-info-circle me-2"></i>Información de Reserva</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="infoReservaDetalle">
+                                            <!-- Se llena dinámicamente -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Tab -->
+                <div class="tab-pane fade" id="services" role="tabpanel">
+                    <h3 class="mb-4"><i class="fas fa-concierge-bell me-2"></i>Gestión de Servicios</h3>
+
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5><i class="fas fa-list me-2"></i>Servicios Disponibles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="servicesContainer">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Cargando servicios...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-plus me-2"></i>Nuevo Servicio</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="newServiceForm">
+                                        <div class="mb-3">
+                                            <label for="newServiceName" class="form-label">Nombre del Servicio</label>
+                                            <input type="text" class="form-control" id="newServiceName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newServiceDescription" class="form-label">Descripción</label>
+                                            <textarea class="form-control" id="newServiceDescription"
+                                                rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newServiceBasePrice" class="form-label">Precio Base (€)</label>
+                                            <input type="number" class="form-control" id="newServiceBasePrice"
+                                                step="0.01" min="0" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newServiceCategory" class="form-label">Categoría</label>
+                                            <select class="form-select" id="newServiceCategory" required>
+                                                <option value="">Seleccionar categoría...</option>
+                                                <option value="alojamiento">Alojamiento</option>
+                                                <option value="restauracion">Restauración</option>
+                                                <option value="actividades">Actividades</option>
+                                                <option value="transporte">Transporte</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-plus me-2"></i>Crear Servicio
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Tab -->
+                <div class="tab-pane fade" id="resources" role="tabpanel">
+                    <h3 class="mb-4"><i class="fas fa-building me-2"></i>Gestión de Recursos</h3>
+
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-list me-2"></i>Recursos Disponibles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="resourcesContainer">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Cargando recursos...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-plus me-2"></i>Nuevo Recurso</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="newResourceForm">
+                                        <div class="mb-3">
+                                            <label for="newResourceName" class="form-label">Nombre del Recurso</label>
+                                            <input type="text" class="form-control" id="newResourceName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newResourceType" class="form-label">Tipo de Recurso</label>
+                                            <select class="form-select" id="newResourceType" required>
+                                                <option value="">Seleccionar tipo...</option>
+                                                <option value="habitacion">Habitación</option>
+                                                <option value="sala">Sala</option>
+                                                <option value="equipamiento">Equipamiento</option>
+                                                <option value="vehiculo">Vehículo</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newResourceCapacity" class="form-label">Capacidad</label>
+                                            <input type="number" class="form-control" id="newResourceCapacity" min="1"
+                                                value="1">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newResourceDescription" class="form-label">Descripción</label>
+                                            <textarea class="form-control" id="newResourceDescription"
+                                                rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="newResourceAvailable" checked>
+                                                <label class="form-check-label" for="newResourceAvailable">
+                                                    Disponible
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-plus me-2"></i>Crear Recurso
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <!-- Reservas Tab -->
+                <div class="tab-pane fade" id="reservas" role="tabpanel">
+                    <h3 class="mb-4"><i class="fas fa-calendar-check me-2"></i>Gestión de Reservas</h3>
+
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5><i class="fas fa-list me-2"></i>Reservas Existentes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="reservasContainer">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Cargando reservas...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5><i class="fas fa-plus me-2"></i><span id="reservaFormTitle">Nueva Reserva</span></h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="newReservaForm">
+                                        <!-- Campo para mostrar ID de reserva en edición -->
+                                        <div class="mb-3" id="reservaIdField" style="display: none;">
+                                            <label class="form-label">ID de Reserva</label>
+                                            <input type="text" class="form-control" id="reservaIdDisplay" readonly>
+                                            <div class="form-text text-muted">Editando reserva #<span id="reservaIdNumber"></span></div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaCliente" class="form-label">Cliente</label>
+                                            <select class="form-select" id="newReservaCliente" required>
+                                                <option value="">Seleccionar cliente...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaServicio" class="form-label">Servicio</label>
+                                            <select class="form-select" id="newReservaServicio" required>
+                                                <option value="">Seleccionar servicio...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaRecurso" class="form-label">Recurso</label>
+                                            <select class="form-select" id="newReservaRecurso" required>
+                                                <option value="">Seleccionar recurso...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaFechaInicio" class="form-label">Fecha y Hora de Inicio</label>
+                                            <input type="datetime-local" class="form-control" id="newReservaFechaInicio" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaFechaFin" class="form-label">Fecha y Hora de Fin</label>
+                                            <input type="datetime-local" class="form-control" id="newReservaFechaFin" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newReservaEstado" class="form-label">Estado</label>
+                                            <select class="form-select" id="newReservaEstado" required>
+                                                <option value="confirmada">Confirmada</option>
+                                                <option value="pendiente">Pendiente</option>
+                                                <option value="cancelada">Cancelada</option>
+                                                <option value="completada">Completada</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-plus me-2"></i><span id="reservaFormButtonText">Crear Reserva</span>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Área de mensajes -->
+                                    <div id="reservaMessageArea" class="mt-3" style="display: none;">
+                                        <div class="alert" id="reservaMessage" role="alert">
+                                            <span id="reservaMessageText"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtros y Búsqueda -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5><i class="fas fa-search me-2"></i>Filtros y Búsqueda</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="filterFechaInicio" class="form-label">Fecha Inicio</label>
+                                            <input type="date" class="form-control" id="filterFechaInicio">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="filterFechaFin" class="form-label">Fecha Fin</label>
+                                            <input type="date" class="form-control" id="filterFechaFin">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="filterEstado" class="form-label">Estado</label>
+                                            <select class="form-select" id="filterEstado">
+                                                <option value="">Todos</option>
+                                                <option value="confirmada">Confirmada</option>
+                                                <option value="pendiente">Pendiente</option>
+                                                <option value="cancelada">Cancelada</option>
+                                                <option value="completada">Completada</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="filterServicio" class="form-label">Servicio</label>
+                                            <select class="form-select" id="filterServicio">
+                                                <option value="">Todos</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary w-100" id="btnFiltrarReservas" style="margin-top: 32px;">
+                                                <i class="fas fa-search me-2"></i>Filtrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Reglas -->
+    <div class="modal fade" id="editRuleModal" tabindex="-1" aria-labelledby="editRuleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRuleModalLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Regla de Precio
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRuleForm">
+                        <input type="hidden" id="editRuleId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editRuleName" class="form-label">Nombre de la Regla</label>
+                                    <input type="text" class="form-control" id="editRuleName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editRuleType" class="form-label">Tipo de Regla</label>
+                                    <select class="form-select" id="editRuleType" required>
+                                        <option value="hora">Hora del Día</option>
+                                        <option value="dia_semana">Día de la Semana</option>
+                                        <option value="anticipacion">Anticipación</option>
+                                        <option value="duracion">Duración</option>
+                                        <option value="participantes">Participantes</option>
+                                        <option value="tipo_cliente">Tipo de Cliente</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editRuleModifierType" class="form-label">Tipo de Modificador</label>
+                                    <select class="form-select" id="editRuleModifierType" required>
+                                        <option value="porcentaje">Porcentaje (%)</option>
+                                        <option value="monto_fijo">Monto Fijo (€)</option>
+                                        <option value="precio_fijo">Precio Fijo (€)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editRuleModifierValue" class="form-label">Valor del Modificador</label>
+                                    <input type="number" class="form-control" id="editRuleModifierValue" step="0.01"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editRulePriority" class="form-label">Prioridad</label>
+                                    <input type="number" class="form-control" id="editRulePriority" min="1" max="100"
+                                        value="10" required>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="editRuleActive" checked>
+                                        <label class="form-check-label" for="editRuleActive">
+                                            Regla Activa
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRuleCondition" class="form-label">Condición (JSON)</label>
+                            <textarea class="form-control" id="editRuleCondition" rows="4"
+                                placeholder='Ej: {"hora_inicio": "17:00", "hora_fin": "20:00", "dias": [0,1,2,3,4]}'></textarea>
+                            <small class="form-text text-muted">Formato JSON para la condición específica de la
+                                regla</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="app.saveEditedRule()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Servicios -->
+    <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editServiceModalLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Servicio
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editServiceForm">
+                        <input type="hidden" id="editServiceId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editServiceName" class="form-label">Nombre del Servicio</label>
+                                    <input type="text" class="form-control" id="editServiceName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editServiceDescription" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="editServiceDescription" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editServiceBasePrice" class="form-label">Precio Base (€)</label>
+                                    <input type="number" class="form-control" id="editServiceBasePrice" step="0.01"
+                                        min="0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editServiceCategory" class="form-label">Categoría</label>
+                                    <select class="form-select" id="editServiceCategory" required>
+                                        <option value="alojamiento">Alojamiento</option>
+                                        <option value="restauracion">Restauración</option>
+                                        <option value="actividades">Actividades</option>
+                                        <option value="transporte">Transporte</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="app.saveEditedService()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Recursos -->
+    <div class="modal fade" id="editResourceModal" tabindex="-1" aria-labelledby="editResourceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editResourceModalLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Recurso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editResourceForm">
+                        <input type="hidden" id="editResourceId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editResourceName" class="form-label">Nombre del Recurso</label>
+                                    <input type="text" class="form-control" id="editResourceName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editResourceType" class="form-label">Tipo de Recurso</label>
+                                    <select class="form-select" id="editResourceType" required>
+                                        <option value="habitacion">Habitación</option>
+                                        <option value="sala">Sala</option>
+                                        <option value="equipamiento">Equipamiento</option>
+                                        <option value="vehiculo">Vehículo</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editResourceCapacity" class="form-label">Capacidad</label>
+                                    <input type="number" class="form-control" id="editResourceCapacity" min="1"
+                                        value="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editResourceDescription" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="editResourceDescription" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editResourceAvailable" checked>
+                                <label class="form-check-label" for="editResourceAvailable">
+                                    Disponible
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="app.saveEditedResource()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear Reserva desde Calendario -->
+    <div class="modal fade" id="calendarioReservaModal" tabindex="-1" aria-labelledby="calendarioReservaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="calendarioReservaModalLabel">
+                        <i class="fas fa-calendar-plus me-2"></i>Nueva Reserva desde Calendario
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Información del período seleccionado -->
+                        <div class="col-12 mb-4">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Período seleccionado:</strong> 
+                                <span id="periodoSeleccionado"></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Formulario de reserva -->
+                        <div class="col-12">
+                            <form id="calendarioReservaForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaCliente" class="form-label">Cliente</label>
+                                            <select class="form-select" id="calendarioReservaCliente" required>
+                                                <option value="">Seleccionar cliente...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaServicio" class="form-label">Servicio</label>
+                                            <select class="form-select" id="calendarioReservaServicio" required>
+                                                <option value="">Seleccionar servicio...</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaRecurso" class="form-label">Recurso</label>
+                                            <select class="form-select" id="calendarioReservaRecurso" required>
+                                                <option value="">Seleccionar recurso...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaFechaInicio" class="form-label">Fecha y Hora de Inicio</label>
+                                            <input type="datetime-local" class="form-control" id="calendarioReservaFechaInicio" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaFechaFin" class="form-label">Fecha y Hora de Fin</label>
+                                            <div class="input-group">
+                                                <input type="datetime-local" class="form-control" id="calendarioReservaFechaFin" required>
+                                                <button type="button" class="btn btn-outline-primary" onclick="app.calcularFechaFinDesdeServicio()" title="Recalcular fecha de fin basándose en el servicio seleccionado">
+                                                    <i class="fas fa-calculator"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="calendarioReservaEstado" class="form-label">Estado</label>
+                                            <select class="form-select" id="calendarioReservaEstado" required>
+                                                <option value="confirmada">Confirmada</option>
+                                                <option value="pendiente">Pendiente</option>
+                                                <option value="cancelada">Cancelada</option>
+                                                <option value="completada">Completada</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Opciones de reserva múltiple -->
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="card border-primary">
+                                            <div class="card-header bg-primary text-white">
+                                                <h6 class="mb-0"><i class="fas fa-calendar-week me-2"></i>Opciones de Reserva Múltiple</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="reservaMultipleDias">
+                                                            <label class="form-check-label" for="reservaMultipleDias">
+                                                                Reserva de múltiples días
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="reservaRecurrente">
+                                                            <label class="form-check-label" for="reservaRecurrente">
+                                                                Reserva recurrente
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="reservaBloque">
+                                                            <label class="form-check-label" for="reservaBloque">
+                                                                Bloquear período completo
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Configuración de reserva múltiple -->
+                                                <div id="configuracionMultiple" class="mt-3" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="diasAdicionales" class="form-label">Días adicionales</label>
+                                                            <input type="number" class="form-control" id="diasAdicionales" min="1" max="30" value="1">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="tipoRecurrencia" class="form-label">Tipo de recurrencia</label>
+                                                            <select class="form-select" id="tipoRecurrencia">
+                                                                <option value="diaria">Diaria</option>
+                                                                <option value="semanal">Semanal</option>
+                                                                <option value="mensual">Mensual</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Área de mensajes -->
+                    <div id="calendarioReservaMessageArea" class="mt-3" style="display: none;">
+                        <div class="alert" id="calendarioReservaMessage" role="alert">
+                            <span id="calendarioReservaMessageText"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="app.crearReservaDesdeCalendario()">
+                        <i class="fas fa-calendar-plus me-2"></i>Crear Reserva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

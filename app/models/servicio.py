@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from ..db import Base
+from ..db_sqlite_clean import Base
 
 class Servicio(Base):
     __tablename__ = "servicios"
@@ -11,8 +11,8 @@ class Servicio(Base):
     descripcion = Column(String)
     duracion_minutos = Column(Integer, nullable=False)
     precio_base = Column(Float, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
     
     # Relationships
     reservas = relationship("Reserva", back_populates="servicio")

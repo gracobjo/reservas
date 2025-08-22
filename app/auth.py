@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from .config import settings
-from .db import get_db
+from .db_sqlite_clean import get_db
 from .models.usuario import Usuario
 
 # Password hashing

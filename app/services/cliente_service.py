@@ -18,6 +18,11 @@ class ClienteService:
         return db_cliente
     
     @staticmethod
+    def get_clientes(db: Session) -> list[Cliente]:
+        """Obtener lista de todos los clientes"""
+        return db.query(Cliente).all()
+    
+    @staticmethod
     def get_cliente(db: Session, cliente_id: int) -> Cliente:
         db_cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
         if db_cliente is None:

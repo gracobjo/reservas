@@ -33,3 +33,13 @@ class DisponibilidadResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class DisponibilidadAvanzadaResponse(BaseModel):
+    fecha: str
+    hora: Optional[str] = None
+    servicio_id: Optional[int] = None
+    recurso_id: Optional[int] = None
+    slots_disponibles: List[dict]
+    
+    class Config:
+        from_attributes = True

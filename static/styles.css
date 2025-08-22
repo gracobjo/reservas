@@ -1,0 +1,2685 @@
+/* Estilos personalizados para el Sistema de Precios Dinámicos */
+
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header personalizado */
+header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Navegación con tabs */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: var(--primary-color);
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Cards con efectos */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+/* Cards de estadísticas */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-warning,
+.card.bg-info {
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para opciones deshabilitadas en selectores */
+select option:disabled {
+    color: #6c757d;
+    font-style: italic;
+    background-color: #f8f9fa;
+}
+
+select option:disabled:hover {
+    background-color: #e9ecef;
+}
+
+/* Estilos para las pestañas de gestión */
+.tab-pane#services,
+.tab-pane#resources {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Asegurar que las secciones de gestión tengan el mismo espaciado */
+.tab-pane#services h3,
+.tab-pane#resources h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.tab-pane#services .row,
+.tab-pane#resources .row {
+    margin-bottom: 1.5rem;
+}
+
+/* Asegurar que las pestañas de gestión tengan el mismo comportamiento */
+.tab-pane#services,
+.tab-pane#resources {
+    display: block;
+    height: auto;
+    overflow: visible;
+}
+
+/* Estilos específicos para las listas de servicios y recursos */
+#servicesContainer,
+#resourcesContainer {
+    min-height: 200px;
+}
+
+/* Estilos para las tarjetas de servicios y recursos */
+.service-card,
+.resource-card {
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Forzar que las pestañas de gestión se muestren correctamente */
+.tab-pane#services,
+.tab-pane#resources {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Asegurar que las pestañas activas se muestren */
+.tab-pane#services.active,
+.tab-pane#resources.active {
+    display: block !important;
+}
+
+/* Estilos para el contenido de las pestañas */
+.tab-pane#services .card,
+.tab-pane#resources .card {
+    margin-bottom: 1.5rem;
+}
+
+/* Estilos para el selector de participantes cuando está deshabilitado */
+#calcParticipants option:disabled {
+    color: #dc3545;
+    font-weight: 500;
+    background-color: #f8d7da;
+}
+
+#calcParticipants option:disabled:hover {
+    background-color: #f5c6cb;
+}
+
+.card.bg-primary .card-title,
+.card.bg-success .card-title,
+.card.bg-warning .card-title,
+.card.bg-info .card-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.card.bg-primary h2,
+.card.bg-success h2,
+.card.bg-warning h2,
+.card.bg-info h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Formularios */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, #1e7e34 100%);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #e0a800 100%);
+    color: #212529;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #c82333 100%);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, var(--info-color) 0%, #138496 100%);
+}
+
+/* Tablas */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Checkboxes personalizados */
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Modal personalizado */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0 0 15px 15px;
+}
+
+/* Gráficos */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Lista de reglas recientes */
+.list-group-item {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+/* Estados de las reglas */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+}
+
+.badge.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Resultados de cálculo */
+.calculation-result {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.price-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.price-breakdown {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Simulación semanal */
+.simulation-day {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.simulation-day h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.simulation-hour {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.simulation-hour:last-child {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Estados de carga */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Mensajes de estado */
+.alert {
+    border-radius: 8px;
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border-left: 4px solid var(--warning-color);
+}
+
+.alert-info {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: var(--info-color);
+    border-left: 4px solid var(--info-color);
+}
+
+/* Tooltips personalizados */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+.tooltip-inner {
+    background-color: var(--dark-color);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Estilos para alertas flotantes */
+.alert.position-fixed {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Sistema de notificaciones en tiempo real */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+}
+
+.notification {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+    overflow: hidden;
+    border-left: 4px solid;
+}
+
+.notification-success {
+    border-left-color: #28a745;
+}
+
+.notification-warning {
+    border-left-color: #ffc107;
+}
+
+.notification-danger {
+    border-left-color: #dc3545;
+}
+
+.notification-info {
+    border-left-color: #17a2b8;
+}
+
+.notification-content {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notification-content span {
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+/* Animaciones de entrada y salida */
+.notification-slide-in {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification-slide-out {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Mejoras en la calculadora */
+#calcDuration:invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+#calcDuration:valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Estilos para el texto de ayuda */
+.form-text.text-warning {
+    color: #856404 !important;
+    font-weight: 500;
+}
+
+.form-text.text-muted {
+    color: #6c757d !important;
+}
+
+/* Mejoras en el dashboard */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Estilos para badges de reglas */
+.badge {
+    font-size: 0.85em;
+    padding: 8px 12px;
+}
+
+/* Mejoras en formularios */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .notification-container {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+/* Estilos para la pestaña de notificaciones */
+.notification-settings-card {
+    transition: all 0.3s ease;
+}
+
+.notification-settings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.notification-settings-card .card-header {
+    border-bottom: none;
+    padding: 1.5rem 1.25rem;
+}
+
+.notification-settings-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Configuración de notificaciones */
+.form-check {
+    margin-bottom: 0.75rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+}
+
+/* Recordatorios programados */
+.reminder-list {
+    list-style: none;
+    padding: 0;
+}
+
+.reminder-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f8f9fa;
+    display: flex;
+    align-items: center;
+}
+
+.reminder-list li:last-child {
+    border-bottom: none;
+}
+
+.reminder-list li i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* Historial de notificaciones */
+.notification-history-item {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.notification-history-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.notification-history-item.fw-bold {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-left: 3px solid var(--primary-color);
+}
+
+.notification-history-item .badge {
+    font-size: 0.7em;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Estadísticas de notificaciones */
+.notification-stats-card {
+    text-align: center;
+}
+
+.notification-stats-card h4 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.notification-stats-card small {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Configuración avanzada */
+.advanced-settings-row {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.advanced-settings-row .form-check {
+    margin-bottom: 1rem;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Notificaciones de progreso */
+.notification-progress {
+    margin-top: 0.5rem;
+}
+
+.progress {
+    height: 4px;
+    border-radius: 2px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+/* Notificaciones del escritorio */
+.desktop-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 1rem;
+    max-width: 300px;
+    z-index: 10001;
+    border-left: 4px solid;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.desktop-notification.success {
+    border-left-color: var(--success-color);
+}
+
+.desktop-notification.warning {
+    border-left-color: var(--warning-color);
+}
+
+.desktop-notification.danger {
+    border-left-color: var(--danger-color);
+}
+
+.desktop-notification.info {
+    border-left-color: var(--info-color);
+}
+
+/* Sonidos de notificación */
+.notification-sound {
+    display: none;
+}
+
+/* Estados de las notificaciones */
+.notification-state {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.notification-state.unread {
+    background-color: var(--primary-color);
+}
+
+.notification-state.read {
+    background-color: #6c757d;
+}
+
+/* Filtros de notificaciones */
+.notification-filters {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.notification-filters .btn-group {
+    margin-right: 0.5rem;
+}
+
+.notification-filters .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Contador de notificaciones no leídas */
+.notification-badge {
+    position: relative;
+}
+
+.notification-badge .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.7em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Animaciones para notificaciones */
+@keyframes notificationPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.notification-urgent {
+    animation: notificationPulse 2s infinite;
+}
+
+/* Responsive para notificaciones */
+@media (max-width: 768px) {
+    .notification-container {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .desktop-notification {
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+    
+    .notification-history-item {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Temas de notificación */
+.notification-theme-dark {
+    background-color: #343a40;
+    color: white;
+}
+
+.notification-theme-dark .notification-content {
+    color: white;
+}
+
+.notification-theme-dark .notification-close {
+    color: #adb5bd;
+}
+
+.notification-theme-dark .notification-close:hover {
+    background-color: #495057;
+    color: white;
+}
+
+/* Notificaciones con prioridad */
+.notification-priority-high {
+    border-left-width: 6px;
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+}
+
+.notification-priority-medium {
+    border-left-width: 4px;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.notification-priority-low {
+    border-left-width: 2px;
+    box-shadow: 0 2px 10px rgba(23, 162, 184, 0.3);
+}
+
+/* ===== ESTILOS PARA GESTIÓN DE REGLAS ===== */
+/* ===== ESTILOS PARA REGLAS APLICADAS EN CALCULADORA ===== */
+.calculation-rules .card {
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.calculation-rules .card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.calculation-rules .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.calculation-rules .text-muted {
+    font-size: 0.8rem;
+}
+
+/* ===== ESTILOS PARA GESTIÓN DE REGLAS ===== */
+
+/* Cards de reglas */
+.rule-card {
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.rule-card:hover {
+    border-left-color: var(--success-color);
+    transform: translateX(5px);
+}
+
+.rule-card .card-body {
+    padding: 1.25rem;
+}
+
+/* Badges de estado de reglas */
+.rule-card .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* Botones de acción de reglas */
+.rule-card .btn-group-vertical .btn {
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.rule-card .btn-group-vertical .btn:last-child {
+    margin-bottom: 0;
+}
+
+/* Información de la regla */
+.rule-card .text-muted {
+    font-size: 0.8rem;
+}
+
+.rule-card code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #e83e8c;
+}
+
+/* Modal de edición de reglas */
+#editRuleModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#editRuleModal .form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+#editRuleModal .form-control,
+#editRuleModal .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+#editRuleModal .form-control:focus,
+#editRuleModal .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive para reglas */
+@media (max-width: 768px) {
+    .rule-card .row {
+        flex-direction: column;
+    }
+    
+    .rule-card .col-md-4.text-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+    
+    .rule-card .btn-group-vertical {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .rule-card .btn-group-vertical .btn {
+        margin-bottom: 0;
+    }
+}
+
+/* ===== ESTILOS PARA GESTIÓN DE SERVICIOS Y RECURSOS ===== */
+
+/* Cards de servicios y recursos */
+.service-card,
+.resource-card {
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover,
+.resource-card:hover {
+    border-left-color: var(--success-color);
+    transform: translateX(5px);
+}
+
+.service-card .card-body,
+.resource-card .card-body {
+    padding: 1.25rem;
+}
+
+/* Badges de servicios y recursos */
+.service-card .badge,
+.resource-card .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* Botones de acción de servicios y recursos */
+.service-card .btn-group-vertical .btn,
+.resource-card .btn-group-vertical .btn {
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.service-card .btn-group-vertical .btn:last-child,
+.resource-card .btn-group-vertical .btn:last-child {
+    margin-bottom: 0;
+}
+
+/* Información de servicios y recursos */
+.service-card .text-muted,
+.resource-card .text-muted {
+    font-size: 0.8rem;
+}
+
+/* Formularios de servicios y recursos */
+#newServiceForm .form-control,
+#newResourceForm .form-control,
+#editServiceForm .form-control,
+#editResourceForm .form-control {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s ease;
+}
+
+#newServiceForm .form-control:focus,
+#newResourceForm .form-control:focus,
+#editServiceForm .form-control:focus,
+#editResourceForm .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive para servicios y recursos */
+@media (max-width: 768px) {
+    .service-card .row,
+    .resource-card .row {
+        flex-direction: column;
+    }
+    
+    .service-card .col-md-4.text-end,
+    .resource-card .col-md-4.text-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+    
+    .service-card .btn-group-vertical,
+    .resource-card .btn-group-vertical {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .service-card .btn-group-vertical .btn,
+    .resource-card .btn-group-vertical .btn {
+        margin-bottom: 0;
+    }
+}
+
+importan
+
+/* Estilos para el contenido de las celdas del día */
+.calendario-dia .contenido {
+    flex-grow: 1;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+}
+
+/* Estilos específicos para el indicador de disponibilidad */
+.calendario-dia .calendario-disponible-indicator.contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    margin-top: auto;
+    padding: 4px;
+    font-size: 10px;
+    color: #6c757d;
+    opacity: 0.6;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+}
+
+.calendario-reserva {
+    background-color: #007bff;
+    color: white;
+    padding: 4px 6px;
+    margin: 2px 0;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.calendario-reserva:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.calendario-reserva.pendiente {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.calendario-reserva.confirmada {
+    background-color: #28a745;
+}
+
+.calendario-reserva.cancelada {
+    background-color: #dc3545;
+}
+
+/* Vista Semanal */
+.calendario-grid-semanal {
+    display: grid !important;
+    grid-template-columns: 80px repeat(7, 1fr) !important;
+    grid-template-rows: repeat(13, 80px) !important;
+    min-height: 1040px !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    gap: 0 !important;
+}
+
+.calendario-hora {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    background-color: #e9ecef;
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    min-height: 80px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 2px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.calendario-celda-semanal {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    position: relative;
+    background-color: #fff;
+    min-height: 80px !important;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.calendario-celda-semanal:hover {
+    background-color: #f8f9fa;
+}
+
+/* Vista Diaria */
+.calendario-grid-diario {
+    display: grid !important;
+    grid-template-columns: 80px 1fr !important;
+    min-height: 800px;
+    width: 100%;
+    gap: 0;
+}
+
+.calendario-celda-diaria {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    position: relative;
+    background-color: #fff;
+    min-height: 60px;
+}
+
+.calendario-celda-diaria:hover {
+    background-color: #f8f9fa;
+}
+
+/* Reservas en vistas semanal y diaria */
+.calendario-reserva-detalle {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    background-color: #007bff;
+    color: white;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    z-index: 10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.calendario-reserva-detalle:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.calendario-reserva-detalle.pendiente {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.calendario-reserva-detalle.confirmada {
+    background-color: #28a745;
+}
+
+.calendario-reserva-detalle.cancelada {
+    background-color: #dc3545;
+}
+
+/* Indicadores de disponibilidad */
+.calendario-disponible {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+/* Header de días en vista semanal */
+.calendario-dia-header-semanal {
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    text-align: center;
+    padding: 4px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.calendario-dia-header-semanal .text-primary {
+    color: #007bff !important;
+}
+
+.calendario-dia-header-semanal .fw-bold {
+    font-weight: 700 !important;
+}
+
+/* Indicador de disponibilidad */
+.calendario-disponible-indicator {
+    text-align: center;
+    color: #6c757d;
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: auto;
+    padding: 8px;
+}
+
+.calendario-disponible-indicator i {
+    font-size: 16px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.calendario-ocupado {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.calendario-mantenimiento {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendario-grid {
+        grid-template-columns: repeat(7, 1fr);
+        min-height: 400px;
+    }
+    
+    .calendario-dia {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .calendario-reserva {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 5px;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.calendario-dia, .calendario-celda-semanal, .calendario-celda-diaria {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estados de carga */
+.calendario-cargando {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    color: #6c757d;
+}
+
+.calendario-cargando .spinner-border {
+    margin-right: 10px;
+}
+
+/* Tooltips personalizados */
+.calendario-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 250px;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+/* Indicadores de estado */
+.calendario-estado-indicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.calendario-estado-indicator.pendiente {
+    background-color: #ffc107;
+}
+
+.calendario-estado-indicator.confirmada {
+    background-color: #28a745;
+}
+
+.calendario-estado-indicator.cancelada {
+    background-color: #dc3545;
+}
+
+/* Botones del calendario */
+#calendario .btn-group .btn.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+#calendario .btn-group .btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+/* Mejoras en el header del calendario */
+.calendario-header .calendario-dia-header:last-child,
+.calendario-header .calendario-hora-header:last-child {
+    border-right: none;
+}
+
+/* Indicadores de estado en las reservas */
+.calendario-reserva::before,
+.calendario-reserva-detalle::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.calendario-reserva.pendiente::before,
+.calendario-reserva-detalle.pendiente::before {
+    background-color: #ffc107;
+}
+
+.calendario-reserva.confirmada::before,
+.calendario-reserva-detalle.confirmada::before {
+    background-color: #28a745;
+}
+
+.calendario-reserva.cancelada::before,
+.calendario-reserva-detalle.cancelada::before {
+    background-color: #dc3545;
+}
+
+/* Mejoras en la responsividad */
+@media (max-width: 576px) {
+    .calendario-grid {
+        grid-template-columns: repeat(7, 1fr);
+        min-height: 300px;
+    }
+    
+    .calendario-dia {
+        min-height: 60px;
+        padding: 2px;
+    }
+    
+    .calendario-reserva {
+        font-size: 9px;
+        padding: 1px 3px;
+        margin: 1px 0;
+    }
+    
+    .calendario-dia-numero {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    
+    #calendario .btn-group .btn {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    #calendario .col-md-8,
+    #calendario .col-md-4 {
+        margin-bottom: 15px;
+    }
+}
+
+/* Estilos específicos para el calendario */
+#calendario .calendario-vista {
+    width: 100%;
+    overflow: hidden;
+}
+
+#calendario .calendario-header {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+#calendario .calendario-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    min-height: 600px;
+    width: 100%;
+    gap: 0;
+}
+
+#calendario .calendario-grid-semanal {
+    display: grid !important;
+    grid-template-columns: 80px repeat(7, 1fr) !important;
+    min-height: 800px;
+    width: 100%;
+    gap: 0;
+}
+
+#calendario .calendario-grid-diario {
+    display: grid !important;
+    grid-template-columns: 80px 1fr !important;
+    min-height: 800px;
+    width: 100%;
+    gap: 0;
+}
+
+/* Asegurar que las celdas del calendario tengan el tamaño correcto */
+#calendario .calendario-dia {
+    border: 1px solid #dee2e6;
+    min-height: 120px;
+    padding: 8px;
+    position: relative;
+    background-color: #fff;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+#calendario .calendario-dia-header {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    border-right: 1px solid #dee2e6;
+    background-color: #e9ecef;
+    box-sizing: border-box;
+}
+
+#calendario .calendario-hora-header {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    border-right: 1px solid #dee2e6;
+    background-color: #e9ecef;
+    box-sizing: border-box;
+}
+
+/* Responsive para el calendario */
+@media (max-width: 768px) {
+    #calendario .calendario-grid {
+        grid-template-columns: repeat(7, 1fr) !important;
+        min-height: 400px;
+    }
+    
+    #calendario .calendario-dia {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    #calendario .calendario-reserva {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    #calendario .calendario-grid {
+        grid-template-columns: repeat(7, 1fr) !important;
+        min-height: 300px;
+    }
+    
+    #calendario .calendario-dia {
+        min-height: 60px;
+        padding: 2px;
+    }
+    
+    #calendario .calendario-reserva {
+        font-size: 9px;
+        padding: 1px 3px;
+        margin: 1px 0;
+    }
+    
+    #calendario .calendario-dia-numero {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+}
+
+/* DEBUG: Forzar grid del calendario */
+#calendario .calendario-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+    min-height: 720px;
+    width: 100% !important;
+    gap: 0 !important;
+}
+
+#calendario .calendario-header {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100% !important;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+#calendario .calendario-dia {
+    border: 1px solid #dee2e6 !important;
+    min-height: 120px !important;
+    height: 120px !important;
+    padding: 8px !important;
+    position: relative !important;
+    background-color: #fff !important;
+    transition: background-color 0.2s;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+/* Forzar que cada día ocupe exactamente 1/7 del ancho */
+#calendario .calendario-dia {
+    width: calc(100% / 7) !important;
+    max-width: calc(100% / 7) !important;
+    min-width: calc(100% / 7) !important;
+    flex: none !important; /* Cambiado de flex: 1 1 0 !important; */
+}
+
+#calendario .calendario-dia .calendario-dia-numero {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+}
+
+#calendario .calendario-dia .calendario-reserva {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+}
+
+#calendario .calendario-dia .calendario-disponible-indicator {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+}
+
+/* Asegurar que el contenedor del calendario tenga el ancho completo */
+#calendario .card-body {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+/* Forzar que el calendario ocupe todo el ancho disponible */
+#calendario .card {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+#calendario .container-fluid {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#calendario .calendario-vista {
+    width: 100% !important;
+    overflow: hidden;
+}
+
+/* Asegurar que el grid del calendario tenga el ancho completo */
+#calendario .calendario-grid {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Forzar el grid en todos los navegadores */
+@supports (display: grid) {
+    #calendario .calendario-grid {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        grid-template-rows: repeat(6, 120px) !important;
+    }
+    
+    #calendario .calendario-header {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+    }
+}
+
+/* Fallback para navegadores que no soportan grid */
+@supports not (display: grid) {
+    #calendario .calendario-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+    
+    #calendario .calendario-dia {
+        width: 14.285714% !important; /* 100% / 7 */
+        flex: 0 0 14.285714% !important;
+    }
+    
+    #calendario .calendario-header {
+        display: flex !important;
+    }
+    
+    #calendario .calendario-dia-header {
+        width: 14.285714% !important;
+        flex: 0 0 14.285714% !important;
+    }
+}
+
+/* ===== ESTILOS DEL CALENDARIO - VERSIÓN SIMPLIFICADA ===== */
+
+/* Vista Mensual - Reglas más específicas */
+#calendario #vistaMensual .calendario-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+    min-height: 720px !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#calendario #vistaMensual .calendario-header {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+}
+
+#calendario #vistaMensual .calendario-dia {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 120px !important;
+    height: 120px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    /* Forzar que cada día ocupe exactamente 1/7 del ancho */
+    width: calc(100% / 7) !important;
+    max-width: calc(100% / 7) !important;
+    min-width: calc(100% / 7) !important;
+    /* Eliminar flex que interfiere con el ancho fijo */
+    flex: none !important;
+}
+
+#calendario #vistaMensual .calendario-dia .calendario-dia-numero {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    /* Eliminar flex que puede interferir */
+    flex: none !important;
+}
+
+#calendario #vistaMensual .calendario-dia .calendario-reserva {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    /* Eliminar flex que puede interferir */
+    flex: none !important;
+}
+
+#calendario #vistaMensual .calendario-dia .calendario-disponible-indicator {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    /* Eliminar flex que puede interferir */
+    flex: none !important;
+}
+
+/* Reglas adicionales para forzar el ancho completo */
+#calendario #vistaMensual .calendario-dia > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    /* Eliminar flex que puede interferir */
+    flex: none !important;
+}
+
+#calendario #vistaMensual .calendario-dia .calendario-dia-numero,
+#calendario #vistaMensual .calendario-dia .calendario-reserva,
+#calendario #vistaMensual .calendario-dia .calendario-disponible-indicator {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    /* Eliminar flex que puede interferir */
+    flex: none !important;
+}
+
+/* Reglas adicionales para forzar el ancho del grid */
+#calendario #vistaMensual {
+    width: 100% !important;
+    max-width: none !important;
+    overflow-x: auto !important;
+}
+
+#calendario #vistaMensual .calendario-grid {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 800px !important;
+    box-sizing: border-box !important;
+}
+
+/* Forzar que el contenedor principal del calendario tenga ancho completo */
+#calendario .card,
+#calendario .container-fluid,
+#calendario .row {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Regla adicional para forzar el ancho completo de todos los elementos del calendario */
+#calendario * {
+    box-sizing: border-box !important;
+}
+
+/* Regla específica para forzar que los elementos internos del día tengan ancho completo */
+#calendario .calendario-dia > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    display: block !important;
+}
+
+/* Regla más agresiva para forzar el ancho completo */
+#calendario .calendario-dia .calendario-dia-numero,
+#calendario .calendario-dia .calendario-reserva,
+#calendario .calendario-dia .calendario-disponible-indicator {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    display: block !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+/* Regla para forzar que el ancho sea exactamente el correcto */
+#calendario .calendario-dia {
+    width: calc(100% / 7) !important;
+    max-width: calc(100% / 7) !important;
+    min-width: calc(100% / 7) !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Regla para forzar que el grid tenga el ancho correcto */
+#calendario .calendario-grid {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 800px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+}
+
+/* Regla para forzar que el ancho sea exactamente el correcto - VERSIÓN FINAL */
+#calendario .calendario-dia {
+    width: calc(100% / 7) !important;
+    max-width: calc(100% / 7) !important;
+    min-width: calc(100% / 7) !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Regla para forzar que los elementos internos tengan el ancho correcto - VERSIÓN FINAL */
+#calendario .calendario-dia .calendario-dia-numero,
+#calendario .calendario-dia .calendario-reserva,
+#calendario .calendario-dia .calendario-disponible-indicator {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+    display: block !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+
+
+/* Regla para forzar que el grid del calendario tenga ancho completo */
+#calendario .calendario-grid {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 800px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Regla para forzar que el ancho sea exactamente el correcto - VERSIÓN FINAL */
+#calendario .calendario-dia {
+    width: calc(100% / 7) !important;
+    max-width: calc(100% / 7) !important;
+    min-width: calc(100% / 7) !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 120px !important;
+    height: 120px !important;
+    padding: 8px !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #fff !important;
+    transition: background-color 0.2s !important;
+}
+
+/* Regla para forzar que el grid tenga el ancho correcto - VERSIÓN FINAL */
+#calendario .calendario-grid {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 800px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+}
+
+/* Regla para forzar que el contenedor del calendario tenga el ancho correcto - VERSIÓN FINAL */
+#calendario {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* Regla para forzar que el contenedor del calendario tenga el ancho correcto - VERSIÓN FINAL */
+#calendario .card-body {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    padding: 0 !important;
+}
+
+/* Vista Semanal - Reglas más específicas */
+#calendario #vistaSemanal .calendario-grid-semanal {
+    display: grid !important;
+    grid-template-columns: 80px repeat(7, 1fr) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    min-height: 800px !important;
+    gap: 0 !important;
+}
+
+#calendario #vistaSemanal .calendario-header {
+    display: grid !important;
+    grid-template-columns: 80px repeat(7, 1fr) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+}
+
+/* Vista Diaria - Reglas más específicas */
+#calendario #vistaDiaria .calendario-grid-diario {
+    display: grid !important;
+    grid-template-columns: 80px 1fr !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    min-height: 800px !important;
+    gap: 0 !important;
+}
+
+#calendario #vistaDiaria .calendario-header {
+    display: grid !important;
+    grid-template-columns: 80px 1fr !important;
+    width: 100% !important;
+    min-width: 800px !important;
+}
+
+/* Estilos adicionales para asegurar la visualización */
+.calendario-vista {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.calendario-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+}
+
+.calendario-dia-header {
+    padding: 12px 8px;
+    text-align: center;
+    border-right: 1px solid #dee2e6;
+}
+
+.calendario-hora-header {
+    padding: 12px 8px;
+    text-align: center;
+    border-right: 1px solid #dee2e6;
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Estilos para las celdas del calendario */
+.calendario-dia {
+    border: 1px solid #dee2e6;
+    min-height: 120px;
+    padding: 8px;
+    position: relative;
+    background-color: #fff;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+}
+
+.calendario-dia:hover {
+    background-color: #f8f9fa;
+}
+
+.calendario-dia.otro-mes {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+}
+
+.calendario-dia.hoy {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.calendario-dia-numero {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #495057;
+    text-align: right;
+}
+
+/* Estilos para las reservas */
+.calendario-reserva {
+    background-color: #007bff;
+    color: white;
+    padding: 4px 6px;
+    margin: 2px 0;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.calendario-reserva:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.calendario-reserva.pendiente {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.calendario-reserva.confirmada {
+    background-color: #28a745;
+}
+
+.calendario-reserva.cancelada {
+    background-color: #dc3545;
+}
+
+/* Estilos para las celdas semanales y diarias */
+.calendario-celda-semanal,
+.calendario-celda-diaria {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    position: relative;
+    background-color: #fff;
+    min-height: 80px;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+.calendario-celda-semanal:hover,
+.calendario-celda-diaria:hover {
+    background-color: #f8f9fa;
+}
+
+.calendario-celda-semanal.hoy,
+.calendario-celda-diaria.hoy {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+/* Estilos para las celdas de hora */
+.calendario-hora {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    background-color: #f8f9fa;
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    min-width: 80px;
+}
+
+/* Estilos para las reservas detalladas */
+.calendario-reserva-detalle {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    background-color: #007bff;
+    color: white;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    z-index: 10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendario-reserva-detalle.pendiente {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.calendario-reserva-detalle.confirmada {
+    background-color: #28a745;
+}
+
+.calendario-reserva-detalle.cancelada {
+    background-color: #dc3545;
+}
+
+/* Indicadores de disponibilidad */
+.calendario-disponible-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+
+
+.calendario-disponible-indicator:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+
+
+.calendario-disponible-indicator i {
+    color: #28a745;
+    margin-bottom: 4px;
+}
+
+/* Estilos para los headers de día en vista semanal */
+.calendario-dia-header-semanal {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 6px;
+    margin-bottom: 8px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.calendario-dia-header-semanal .text-primary {
+    color: #007bff !important;
+}
+
+.calendario-dia-header-semanal .text-muted {
+    color: #6c757d !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendario-vista {
+        min-width: 600px;
+    }
+    
+    .calendario-header,
+    .calendario-grid,
+    .calendario-grid-semanal,
+    .calendario-grid-diario {
+        min-width: 600px !important;
+    }
+    
+    .calendario-dia {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .calendario-reserva {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .calendario-vista {
+        min-width: 500px;
+    }
+    
+    .calendario-header,
+    .calendario-grid,
+    .calendario-grid-semanal,
+    .calendario-grid-diario {
+        min-width: 500px !important;
+    }
+    
+    .calendario-dia {
+        min-height: 60px;
+        padding: 2px;
+    }
+    
+    .calendario-reserva {
+        font-size: 9px;
+        padding: 1px 3px;
+    }
+}
+
+/* ===== SOLUCIÓN DEFINITIVA PARA EL CALENDARIO ===== */
+#calendarioMensual.calendario-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+#calendarioMensual .calendario-dia {
+    display: block !important;
+    min-height: 120px !important;
+    height: 120px !important;
+    padding: 8px !important;
+    position: relative !important;
+    background-color: #fff !important;
+    border: 1px solid #dee2e6 !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    flex: none !important;
+}
+
+/* Eliminar TODAS las propiedades flex de los elementos internos */
+#calendarioMensual .calendario-dia > * {
+    flex: none !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    flex-basis: auto !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Header sincronizado */
+#vistaMensual .calendario-header {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Forzar que los elementos sean bloques */
+#calendarioMensual .calendario-dia-numero,
+#calendarioMensual .calendario-reserva,
+#calendarioMensual .calendario-disponible-indicator {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex: none !important;
+}
+
+/* Asegurar que el contenedor padre no limite el ancho */
+#calendario .card-body,
+#calendario .card,
+#calendario .container-fluid,
+#calendario .row {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 800px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Header días */
+.calendario-dia-header {
+    padding: 12px 8px !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+    color: #495057 !important;
+    background-color: #e9ecef !important;
+    border-right: 1px solid #dee2e6 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #calendarioMensual.calendario-grid {
+        min-width: 600px !important;
+        grid-template-rows: repeat(6, 80px) !important;
+    }
+    
+    #calendarioMensual .calendario-dia {
+        min-height: 80px !important;
+        height: 80px !important;
+        padding: 4px !important;
+    }
+    
+    #vistaMensual .calendario-header {
+        min-width: 600px !important;
+    }
+}
+
+/* ===== SOLUCIÓN DEFINITIVA - SOBREESCRIBIR TODO ===== */
+#calendarioMensual.calendario-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* FORZAR ESTILOS DEL CALENDARIO MENSUAL */
+#calendarioMensual {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-template-rows: repeat(6, 120px) !important;
+    width: 100% !important;
+    min-width: 800px !important;
+    max-width: none !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* ========================================
+   CALENDARIO MENSUAL REFACTORIZADO - CONSISTENTE CON OTROS CALENDARIOS
+   ======================================== */
+
+/* CONTENEDOR PRINCIPAL */
+#calendarioMensual {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* CELDAS DEL DÍA */
+.calendario-dia-mensual {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.calendario-dia-mensual:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.calendario-dia-mensual.otro-mes {
+    background-color: #f8f9fa;
+    opacity: 0.7;
+}
+
+.calendario-dia-mensual.hoy {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+    box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.2);
+}
+
+/* NÚMERO DEL DÍA */
+.dia-numero {
+    font-weight: 600;
+    font-size: 14px;
+    color: #495057;
+    text-align: right;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    background-color: rgba(73, 80, 87, 0.05);
+}
+
+.calendario-dia-mensual.otro-mes .dia-numero {
+    color: #adb5bd;
+    background-color: rgba(173, 181, 189, 0.1);
+}
+
+.calendario-dia-mensual.hoy .dia-numero {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #1976d2;
+}
+
+/* CONTENEDOR DE RESERVAS */
+.reservas-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+    padding: 2px;
+}
+
+/* ITEMS DE RESERVA */
+.reserva-item {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    border: none;
+    line-height: 1.2;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.reserva-item.pendiente {
+    background-color: #ffc107;
+    color: #212529;
+    border: 1px solid #e0a800;
+}
+
+.reserva-item.confirmada {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid #1e7e34;
+}
+
+.reserva-item.cancelada {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #c82333;
+}
+
+.reserva-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    z-index: 15;
+}
+
+.reserva-item.pendiente:hover {
+    background-color: #e0a800;
+}
+
+.reserva-item.confirmada:hover {
+    background-color: #1e7e34;
+}
+
+.reserva-item.cancelada:hover {
+    background-color: #c82333;
+}
+
+/* TEXTO DE LA RESERVA */
+.reserva-texto {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+/* INDICADOR DE DISPONIBILIDAD - IGUAL QUE EN SEMANAL */
+.disponible-indicator {
+    color: #6c757d;
+    font-size: 10px;
+    opacity: 0.6;
+    text-align: center;
+    margin-top: auto;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+    white-space: normal;
+    word-wrap: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.disponible-indicator i {
+    font-size: 16px;
+    margin-bottom: 4px;
+    display: block;
+    text-align: center;
+    color: #28a745;
+}
+
+.disponible-indicator div {
+    display: block;
+    text-align: center;
+    white-space: normal;
+    word-wrap: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    line-height: 1.2;
+}
+
+/* INDICADOR CLICKEABLE PARA CALENDARIO MENSUAL */
+.disponible-indicator.clickeable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px dashed #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.disponible-indicator.clickeable:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    border-color: #0056b3;
+    transform: scale(1.02);
+}
+
+.disponible-indicator.clickeable i {
+    color: #007bff !important;
+}
+
+.disponible-indicator.clickeable div {
+    color: #007bff !important;
+    font-weight: 500;
+}
+
+

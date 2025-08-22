@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from ..db import get_db
+from ..db_sqlite_clean import get_db
 from ..services.precio_service import PrecioService
 from ..schemas.precio import PrecioCreate, PrecioResponse, PrecioUpdate
 from ..schemas.base import BaseResponse

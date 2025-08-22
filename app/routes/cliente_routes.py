@@ -1,12 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from ..db import get_db
+from ..db_sqlite_clean import get_db
 from ..services.cliente_service import ClienteService
 from ..schemas.cliente import ClienteCreate, ClienteResponse, ClienteUpdate
 from ..schemas.base import BaseResponse
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
+
+@router.get("/", response_model=List[ClienteResponse])
+def get_clientes(db: Session = Depends(get_db)):
+    """Obtener lista de todos los clientes"""
+    return ClienteService.get_clientes(db)
 
 @router.post("/", response_model=ClienteResponse)
 def create_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):

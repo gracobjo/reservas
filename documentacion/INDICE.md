@@ -74,6 +74,65 @@ Documentación completa del sistema de calendario y gestión de reservas.
 - Integración con API
 - Historial de versiones y evolución
 
+### **🏢 [GESTION_RECURSOS_PRECIOS.md](GESTION_RECURSOS_PRECIOS.md)**
+Documentación completa del sistema de gestión de recursos y precios dinámicos.
+
+**Contenido:**
+- CRUD completo de recursos (Crear, Leer, Editar, Eliminar)
+- Sistema de precios base por recurso
+- Reglas de precios dinámicos (por hora, día, temporada)
+- Modales centrados con navegación por tabs
+- Integración con sistema de reservas
+- API endpoints y estructura de datos
+- Flujos de trabajo y troubleshooting
+- Roadmap de mejoras futuras
+
+### **💰 [IMPLEMENTACION_PRECIO_BASE.md](IMPLEMENTACION_PRECIO_BASE.md)**
+Documentación completa de la implementación del campo precio_base.
+
+**Contenido:**
+- Problema identificado y solución implementada
+- Cambios en modelos, esquemas y base de datos
+- Migración automática de la estructura
+- Pruebas de funcionalidad completas
+- Estado final de la implementación
+
+### **🚀 [SPRINT5_INTEGRACIONES_PAGOS.md](SPRINT5_INTEGRACIONES_PAGOS.md)**
+Documentación completa del Sprint 5: Integraciones y Pagos.
+
+**Contenido:**
+- Sistema completo de pagos (Stripe, PayPal, Transferencia, Efectivo)
+- Sistema de facturación automática con IVA
+- Gestión de reembolsos
+- Integraciones externas (Email, SMS, WhatsApp, Google Calendar)
+- Sistema de notificaciones automáticas
+- Webhooks para eventos del sistema
+- APIs REST completas con validación
+- Arquitectura del sistema y modelos de datos
+
+### **🎨 [FRONTEND_SPRINT5.md](FRONTEND_SPRINT5.md)**
+Documentación completa del frontend del Sprint 5: Interfaces de usuario.
+
+**Contenido:**
+- Interfaces completas para gestión de pagos
+- Sistema de modales para CRUD operations
+- Tabs anidadas para integraciones
+- Filtros avanzados y búsquedas
+- Diseño responsive y moderno
+- Funcionalidades JavaScript completas
+- Estilos CSS personalizados
+- Flujos de usuario y UX
+
+### **🗄️ [GUIA_BASE_DATOS.md](GUIA_BASE_DATOS.md)**
+Guía completa para acceder y verificar la base de datos.
+
+**Contenido:**
+- Métodos de acceso a la base de datos SQLite
+- Verificación de estructura y campos
+- Consultas SQL para verificar datos
+- Herramientas de verificación automática
+- Troubleshooting y soluciones rápidas
+
 ---
 
 ## 🗺️ Planificación y Desarrollo
@@ -117,6 +176,9 @@ Roadmap detallado con plan de desarrollo por sprints.
 - ✅ Calendario visual (mensual/semanal)
 - ✅ Modal de reservas integrado
 - ✅ Gestión completa de reservas
+- ✅ **Sistema de gestión de recursos con CRUD completo**
+- ✅ **Modal de gestión de precios con tabs**
+- ✅ **Reglas de precios dinámicos (hora, día, temporada)**
 
 #### **Validaciones (100%)**
 - ✅ Habitaciones individuales: máximo 1 persona
@@ -134,6 +196,23 @@ Roadmap detallado con plan de desarrollo por sprints.
 - ✅ Cálculo automático de duración
 - ✅ Reservas múltiples y recurrentes
 - ✅ Integración completa con API
+
+### ✅ **GESTIÓN DE RECURSOS Y PRECIOS (100%)**
+
+#### **CRUD de Recursos**
+- ✅ Creación de recursos con formulario modal
+- ✅ Visualización en tarjetas interactivas
+- ✅ Edición completa de recursos
+- ✅ Eliminación con confirmación
+- ✅ Modal de información detallada
+
+#### **Sistema de Precios**
+- ✅ Precio base configurable por recurso
+- ✅ Reglas de precio por hora (franjas horarias)
+- ✅ Reglas de precio por día (días de la semana)
+- ✅ Reglas de precio por temporada (fechas específicas)
+- ✅ Modal de gestión con navegación por tabs
+- ✅ Formularios específicos para cada tipo de regla
 
 ### 📋 **PLANIFICADAS (0%)**
 
@@ -160,10 +239,14 @@ Roadmap detallado con plan de desarrollo por sprints.
 - ✅ Mejoras de UX
 - ✅ Notificaciones avanzadas
 
-#### **Sprint 5: Integraciones**
-- 📋 Sistema de pagos
-- 📋 Integraciones externas
-- 📋 API pública
+#### **Sprint 5: Integraciones y Pagos** ✅ COMPLETADO
+- ✅ Sistema de pagos (Stripe, PayPal, Transferencia, Efectivo)
+- ✅ Sistema de facturación automática con IVA
+- ✅ Gestión de reembolsos
+- ✅ Integraciones externas (Email, SMS, WhatsApp, Google Calendar)
+- ✅ Sistema de notificaciones automáticas
+- ✅ Webhooks para eventos del sistema
+- ✅ APIs REST completas con validación
 
 #### **Sprint 6: Analytics**
 - 📋 Dashboard ejecutivo
@@ -237,6 +320,6 @@ Roadmap detallado con plan de desarrollo por sprints.
 
 ---
 
-**Última actualización del índice**: 22 de Agosto, 2025  
-**Versión del sistema**: 2.9.0  
+**Última actualización del índice**: Diciembre 2024  
+**Versión del sistema**: 3.0.0  
 **Estado de la documentación**: 100% actualizada

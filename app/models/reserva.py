@@ -26,3 +26,6 @@ class Reserva(Base):
     servicio = relationship("Servicio", back_populates="reservas")
     recurso = relationship("Recurso", back_populates="reservas")
     historial_precios = relationship("HistorialPrecio", back_populates="reserva")
+    pagos = relationship("Pago", back_populates="reserva")
+    notificaciones = relationship("Notificacion", back_populates="reserva")
+    sincronizaciones_google = relationship("SincronizacionGoogleCalendar", back_populates="reserva")

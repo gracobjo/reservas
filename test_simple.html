@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple API Precios</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Simple API de Precios</h1>
+    
+    <button onclick="testAPI()">Test API</button>
+    <button onclick="testFetch()">Test Fetch</button>
+    <button onclick="testCargarPrecios()">Test Cargar Precios</button>
+    
+    <div id="resultados"></div>
+    
+    <div id="preciosContainer">
+        <h3>Contenedor de Precios:</h3>
+        <div id="preciosList">Esperando datos...</div>
+    </div>
+
+    <script>
+        function mostrarResultado(mensaje, tipo = 'info') {
+            const resultados = document.getElementById('resultados');
+            const div = document.createElement('div');
+            div.className = `result ${tipo === 'error' ? 'error' : 'success'}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${mensaje}`;
+            resultados.appendChild(div);
+            
+            // Limpiar después de 10 segundos
+            setTimeout(() => div.remove(), 10000);
+        }
+        
+        function testAPI() {
+            mostrarResultado('🔄 Probando API...', 'info');
+            
+            fetch('/api/precios/')
+                .then(response => {
+                    mostrarResultado(`📡 Status: ${response.status} ${response.statusText}`, 'success');
+                    return response.json();
+                })
+                .then(data => {
+                    mostrarResultado(`✅ Datos recibidos: ${data.length} precios`, 'success');
+                    console.log('Datos completos:', data);
+                    
+                    // Mostrar los datos en el contenedor
+                    mostrarPrecios(data);
+                })
+                .catch(error => {
+                    mostrarResultado(`❌ Error: ${error.message}`, 'error');
+                    console.error('Error completo:', error);
+                });
+        }
+        
+        function testFetch() {
+            mostrarResultado('🔄 Probando fetch simple...', 'info');
+            
+            // Usar XMLHttpRequest como alternativa
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/api/precios/', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            mostrarResultado(`✅ XHR exitoso: ${data.length} precios`, 'success');
+                            mostrarPrecios(data);
+                        } catch (e) {
+                            mostrarResultado(`❌ Error parseando JSON: ${e.message}`, 'error');
+                        }
+                    } else {
+                        mostrarResultado(`❌ XHR error: ${xhr.status} ${xhr.statusText}`, 'error');
+                    }
+                }
+            };
+            xhr.send();
+        }
+        
+        function testCargarPrecios() {
+            mostrarResultado('🔄 Probando función cargarPrecios...', 'info');
+            
+            if (typeof cargarPrecios === 'function') {
+                mostrarResultado('✅ Función cargarPrecios encontrada', 'success');
+                try {
+                    cargarPrecios();
+                } catch (error) {
+                    mostrarResultado(`❌ Error ejecutando cargarPrecios: ${error.message}`, 'error');
+                }
+            } else {
+                mostrarResultado('❌ Función cargarPrecios no encontrada', 'error');
+            }
+        }
+        
+        function mostrarPrecios(precios) {
+            const container = document.getElementById('preciosList');
+            
+            if (!precios || precios.length === 0) {
+                container.innerHTML = '<p>No hay precios para mostrar</p>';
+                return;
+            }
+            
+            let html = '<ul>';
+            precios.forEach(precio => {
+                html += `<li><strong>${precio.nombre}</strong> - ${precio.tipo_precio} - €${precio.precio_base}</li>`;
+            });
+            html += '</ul>';
+            
+            container.innerHTML = html;
+        }
+        
+        // Auto-test al cargar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                mostrarResultado('🚀 Página cargada, ejecutando test automático...', 'info');
+                testAPI();
+            }, 1000);
+        });
+    </script>
+    
+    <!-- Cargar el módulo de precios -->
+    <script src="/static/precios.js"></script>
+</body>
+</html>

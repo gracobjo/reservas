@@ -34,6 +34,38 @@
             position: relative !important;
             left: auto !important;
         }
+        
+        /* ✅ Estilos para el modal de precios - UX mejorado */
+        #nuevoPrecioModal {
+            z-index: 9999 !important;
+        }
+        
+        #nuevoPrecioModal .modal-dialog {
+            z-index: 10000 !important;
+            margin: 1.75rem auto !important;
+        }
+        
+        #nuevoPrecioModal .modal-content {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 9998 !important;
+        }
+        
+        /* ✅ Asegurar que los botones del footer sean visibles */
+        #nuevoPrecioModal .modal-footer {
+            border-top: 1px solid #dee2e6 !important;
+            padding: 1rem !important;
+            background: #f8f9fa !important;
+        }
+        
+        #nuevoPrecioModal .modal-footer .btn {
+            margin-left: 0.5rem !important;
+            min-width: 120px !important;
+        }
     </style>
 </head>
 
@@ -107,6 +139,21 @@
                     <button class="nav-link" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resources"
                         type="button" role="tab">
                         <i class="fas fa-building me-2"></i>Gestión Recursos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pagos-tab" data-bs-toggle="tab" data-bs-target="#pagos" type="button" role="tab" aria-controls="pagos" aria-selected="false">
+                        💳 Pagos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="integraciones-tab" data-bs-toggle="tab" data-bs-target="#integraciones" type="button" role="tab" aria-controls="integraciones" aria-selected="false">
+                        🔗 Integraciones
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="precios-tab" data-bs-toggle="tab" data-bs-target="#precios" type="button" role="tab" aria-controls="precios" aria-selected="false">
+                        💰 Precios
                     </button>
                 </li>
             </ul>
@@ -825,15 +872,15 @@
                                         <!-- Vista Mensual -->
                                         <div id="vistaMensual" class="calendario-vista">
                                             <!-- Header del calendario -->
-                                            <div class="calendario-header">
-                                                <div class="calendario-dia-header">Dom</div>
-                                                <div class="calendario-dia-header">Lun</div>
-                                                <div class="calendario-dia-header">Mar</div>
-                                                <div class="calendario-dia-header">Mié</div>
-                                                <div class="calendario-dia-header">Jue</div>
-                                                <div class="calendario-dia-header">Vie</div>
-                                                <div class="calendario-dia-header">Sáb</div>
-                                            </div>
+                                                            <div class="calendario-header">
+                    <div class="calendario-dia-header">Lun</div>
+                    <div class="calendario-dia-header">Mar</div>
+                    <div class="calendario-dia-header">Mié</div>
+                    <div class="calendario-dia-header">Jue</div>
+                    <div class="calendario-dia-header">Vie</div>
+                    <div class="calendario-dia-header">Sáb</div>
+                    <div class="calendario-dia-header">Dom</div>
+                </div>
                                             
                                             <!-- Grid principal del calendario -->
                                             <div id="calendarioMensual" class="calendario-grid">
@@ -873,7 +920,7 @@
                             </div>
                         </div>
 
-                        <!-- Panel de Información de Reserva -->
+                        <!-- Panel de Información de Reserva (mantenido para compatibilidad) -->
                         <div class="row mt-4" id="panelInfoReserva" style="display: none;">
                             <div class="col-12">
                                 <div class="card">
@@ -928,20 +975,14 @@
                                                 rows="3"></textarea>
                                         </div>
                                         <div class="mb-3">
+                                            <label for="newServiceDuration" class="form-label">Duración (minutos)</label>
+                                            <input type="number" class="form-control" id="newServiceDuration"
+                                                min="1" value="60" required>
+                                        </div>
+                                        <div class="mb-3">
                                             <label for="newServiceBasePrice" class="form-label">Precio Base (€)</label>
                                             <input type="number" class="form-control" id="newServiceBasePrice"
                                                 step="0.01" min="0" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="newServiceCategory" class="form-label">Categoría</label>
-                                            <select class="form-select" id="newServiceCategory" required>
-                                                <option value="">Seleccionar categoría...</option>
-                                                <option value="alojamiento">Alojamiento</option>
-                                                <option value="restauracion">Restauración</option>
-                                                <option value="actividades">Actividades</option>
-                                                <option value="transporte">Transporte</option>
-                                                <option value="otros">Otros</option>
-                                            </select>
                                         </div>
                                         <button type="submit" class="btn btn-success w-100">
                                             <i class="fas fa-plus me-2"></i>Crear Servicio
@@ -978,46 +1019,11 @@
                                 <div class="card-header bg-success text-white">
                                     <h5><i class="fas fa-plus me-2"></i>Nuevo Recurso</h5>
                                 </div>
-                                <div class="card-body">
-                                    <form id="newResourceForm">
-                                        <div class="mb-3">
-                                            <label for="newResourceName" class="form-label">Nombre del Recurso</label>
-                                            <input type="text" class="form-control" id="newResourceName" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="newResourceType" class="form-label">Tipo de Recurso</label>
-                                            <select class="form-select" id="newResourceType" required>
-                                                <option value="">Seleccionar tipo...</option>
-                                                <option value="habitacion">Habitación</option>
-                                                <option value="sala">Sala</option>
-                                                <option value="equipamiento">Equipamiento</option>
-                                                <option value="vehiculo">Vehículo</option>
-                                                <option value="otros">Otros</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="newResourceCapacity" class="form-label">Capacidad</label>
-                                            <input type="number" class="form-control" id="newResourceCapacity" min="1"
-                                                value="1">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="newResourceDescription" class="form-label">Descripción</label>
-                                            <textarea class="form-control" id="newResourceDescription"
-                                                rows="3"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                    id="newResourceAvailable" checked>
-                                                <label class="form-check-label" for="newResourceAvailable">
-                                                    Disponible
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-success w-100">
-                                            <i class="fas fa-plus me-2"></i>Crear Recurso
-                                        </button>
-                                    </form>
+                                <div class="card-body text-center">
+                                    <p class="text-muted mb-3">Haz clic en el botón para crear un nuevo recurso</p>
+                                    <button type="button" class="btn btn-success btn-lg" onclick="app.abrirModal('newResourceModal')">
+                                        <i class="fas fa-plus me-2"></i>Crear Nuevo Recurso
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1156,11 +1162,182 @@
                 </div>
             </div>
         </div>
+
+        <!-- Tab de Pagos -->
+        <div class="tab-pane fade" id="pagos" role="tabpanel" aria-labelledby="pagos-tab">
+            <div class="container mt-4">
+                <h2>💳 Gestión de Pagos</h2>
+                <p>Gestiona pagos, facturas y reembolsos del sistema.</p>
+                
+                <!-- Botones de acción -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary me-2" onclick="abrirModal('nuevoPagoModal')">
+                            <i class="fas fa-plus"></i> Nuevo Pago
+                        </button>
+                        <button class="btn btn-success me-2" onclick="abrirModal('nuevaFacturaModal')">
+                            <i class="fas fa-file-invoice"></i> Nueva Factura
+                        </button>
+                        <button class="btn btn-warning me-2" onclick="abrirModal('nuevoReembolsoModal')">
+                            <i class="fas fa-undo"></i> Nuevo Reembolso
+                        </button>
+                        <button class="btn btn-info" onclick="cargarResumenPagos()">
+                            <i class="fas fa-chart-bar"></i> Resumen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <select class="form-select" id="filtroEstadoPago">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="procesando">Procesando</option>
+                            <option value="completado">Completado</option>
+                            <option value="fallido">Fallido</option>
+                            <option value="cancelado">Cancelado</option>
+                            <option value="reembolsado">Reembolsado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filtroMetodoPago">
+                            <option value="">Todos los métodos</option>
+                            <option value="stripe">Stripe</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="efectivo">Efectivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="filtroFechaDesde" placeholder="Desde">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="filtroFechaHasta" placeholder="Hasta">
+                    </div>
+                </div>
+
+                <!-- Lista de pagos -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="pagosContainer">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p>Cargando pagos...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <!-- Tab de Integraciones -->
+                <div class="tab-pane fade" id="integraciones" role="tabpanel" aria-labelledby="integraciones-tab">
+                    <div class="container mt-4">
+                        <h2>🔗 Gestión de Integraciones</h2>
+                        <p>Configura y gestiona integraciones con servicios externos.</p>
+                        
+                        <!-- Botones de acción -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary me-2" onclick="abrirModal('nuevaIntegracionModal')">
+                                    <i class="fas fa-plus"></i> Nueva Integración
+                                </button>
+                                <button class="btn btn-success me-2" onclick="abrirModal('nuevoWebhookModal')">
+                                    <i class="fas fa-link"></i> Nuevo Webhook
+                                </button>
+                                <button class="btn btn-info me-2" onclick="cargarEstadoIntegraciones()">
+                                    <i class="fas fa-heartbeat"></i> Estado
+                                </button>
+                                <button class="btn btn-warning" onclick="procesarNotificacionesPendientes()">
+                                    <i class="fas fa-paper-plane"></i> Procesar Notificaciones
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tabs de integraciones -->
+                        <ul class="nav nav-tabs" id="integracionesTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="integraciones-tab" data-bs-toggle="tab" data-bs-target="#integracionesList" type="button" role="tab">
+                                    <i class="fas fa-plug"></i> Integraciones
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="notificaciones-tab" data-bs-toggle="tab" data-bs-target="#notificacionesList" type="button" role="tab">
+                                    <i class="fas fa-bell"></i> Notificaciones
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="webhooks-tab" data-bs-toggle="tab" data-bs-target="#webhooksList" type="button" role="tab">
+                                    <i class="fas fa-link"></i> Webhooks
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="google-calendar-tab" data-bs-toggle="tab" data-bs-target="#googleCalendarList" type="button" role="tab">
+                                    <i class="fas fa-calendar"></i> Google Calendar
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Contenido de las tabs -->
+                        <div class="tab-content" id="integracionesTabContent">
+                            <!-- Lista de integraciones -->
+                            <div class="tab-pane fade show active" id="integracionesList" role="tabpanel">
+                                <div id="integracionesContainer" class="mt-3">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p>Cargando integraciones...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lista de notificaciones -->
+                            <div class="tab-pane fade" id="notificacionesList" role="tabpanel">
+                                <div id="notificacionesContainer" class="mt-3">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p>Cargando notificaciones...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lista de webhooks -->
+                            <div class="tab-pane fade" id="webhooksList" role="tabpanel">
+                                <div id="webhooksContainer" class="mt-3">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p>Cargando webhooks...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lista de Google Calendar -->
+                            <div class="tab-pane fade" id="googleCalendarList" role="tabpanel">
+                                <div id="googleCalendarContainer" class="mt-3">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p>Cargando sincronizaciones...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </div>
 
     <!-- Modal para Editar Reglas -->
     <div class="modal fade" id="editRuleModal" tabindex="-1" aria-labelledby="editRuleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editRuleModalLabel">
@@ -1242,7 +1419,7 @@
     <!-- Modal para Editar Servicios -->
     <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editServiceModalLabel">
@@ -1266,19 +1443,13 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
+                                    <label for="editServiceDuration" class="form-label">Duración (minutos)</label>
+                                    <input type="number" class="form-control" id="editServiceDuration" min="1" required>
+                                </div>
+                                <div class="mb-3">
                                     <label for="editServiceBasePrice" class="form-label">Precio Base (€)</label>
                                     <input type="number" class="form-control" id="editServiceBasePrice" step="0.01"
                                         min="0" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editServiceCategory" class="form-label">Categoría</label>
-                                    <select class="form-select" id="editServiceCategory" required>
-                                        <option value="alojamiento">Alojamiento</option>
-                                        <option value="restauracion">Restauración</option>
-                                        <option value="actividades">Actividades</option>
-                                        <option value="transporte">Transporte</option>
-                                        <option value="otros">Otros</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1299,7 +1470,7 @@
     <!-- Modal para Editar Recursos -->
     <div class="modal fade" id="editResourceModal" tabindex="-1" aria-labelledby="editResourceModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editResourceModalLabel">
@@ -1325,6 +1496,11 @@
                                         <option value="vehiculo">Vehículo</option>
                                         <option value="otros">Otros</option>
                                     </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editResourcePrice" class="form-label">Precio Base (€)</label>
+                                    <input type="number" class="form-control" id="editResourcePrice" step="0.01" min="0" placeholder="0.00">
+                                    <div class="form-text">Precio base por hora/uso del recurso</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1363,7 +1539,7 @@
 
     <!-- Modal para Crear Reserva desde Calendario -->
     <div class="modal fade" id="calendarioReservaModal" tabindex="-1" aria-labelledby="calendarioReservaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="calendarioReservaModalLabel">
@@ -1511,9 +1687,1247 @@
         </div>
     </div>
 
+    <!-- Modal de Información de Reserva -->
+    <div class="modal fade" id="infoReservaModal" tabindex="-1" aria-labelledby="infoReservaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoReservaModalLabel">
+                        <i class="fas fa-info-circle me-2"></i>Información de Reserva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="infoReservaDetalleModal">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición de Reserva -->
+    <div class="modal fade" id="editReservaModal" tabindex="-1" aria-labelledby="editReservaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editReservaModalLabel">
+                        <i class="fas fa-edit me-2"></i>Editar Reserva
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editReservaForm">
+                        <input type="hidden" id="editReservaId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editReservaCliente" class="form-label">Cliente</label>
+                                    <select class="form-select" id="editReservaCliente" required>
+                                        <option value="">Seleccionar cliente...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editReservaServicio" class="form-label">Servicio</label>
+                                    <select class="form-select" id="editReservaServicio" required>
+                                        <option value="">Seleccionar servicio...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editReservaRecurso" class="form-label">Recurso</label>
+                                    <select class="form-select" id="editReservaRecurso" required>
+                                        <option value="">Seleccionar recurso...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editReservaFechaInicio" class="form-label">Fecha y Hora de Inicio</label>
+                                    <input type="datetime-local" class="form-control" id="editReservaFechaInicio" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editReservaFechaFin" class="form-label">Fecha y Hora de Fin</label>
+                                    <input type="datetime-local" class="form-control" id="editReservaFechaFin" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editReservaEstado" class="form-label">Estado</label>
+                                    <select class="form-select" id="editReservaEstado" required>
+                                        <option value="confirmada">Confirmada</option>
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="cancelada">Cancelada</option>
+                                        <option value="completada">Completada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="app.saveEditedReserva()">
+                        <i class="fas fa-save me-2"></i>Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Creación de Recurso -->
+    <div class="modal fade" id="newResourceModal" tabindex="-1" aria-labelledby="newResourceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newResourceModalLabel">
+                        <i class="fas fa-plus me-2"></i>Crear Nuevo Recurso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newResourceForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="newResourceName" class="form-label">Nombre del Recurso</label>
+                                    <input type="text" class="form-control" id="newResourceName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newResourceType" class="form-label">Tipo de Recurso</label>
+                                    <select class="form-select" id="newResourceType" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="habitacion">Habitación</option>
+                                        <option value="sala">Sala</option>
+                                        <option value="equipamiento">Equipamiento</option>
+                                        <option value="vehiculo">Vehículo</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newResourcePrice" class="form-label">Precio Base (€)</label>
+                                    <input type="number" class="form-control" id="newResourcePrice" step="0.01" min="0" placeholder="0.00">
+                                    <div class="form-text">Precio base por hora/uso del recurso</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="newResourceCapacity" class="form-label">Capacidad</label>
+                                    <input type="number" class="form-control" id="newResourceCapacity" min="1" value="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newResourceDescription" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="newResourceDescription" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newResourceAvailable" checked>
+                                <label class="form-check-label" for="newResourceAvailable">
+                                    Disponible
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="app.createNewResource()">
+                        <i class="fas fa-plus me-2"></i>Crear Recurso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Información de Recurso -->
+    <div class="modal fade" id="infoResourceModal" tabindex="-1" aria-labelledby="infoResourceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoResourceModalLabel">
+                        <i class="fas fa-building me-2"></i>Información del Recurso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="infoResourceDetalleModal">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Precios del Recurso -->
+    <div class="modal fade" id="resourcePricingModal" tabindex="-1" aria-labelledby="resourcePricingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="resourcePricingModalLabel">
+                        <i class="fas fa-euro-sign me-2"></i>Gestión de Precios del Recurso
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Información del recurso -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Recurso:</strong> <span id="resourcePricingName"></span>
+                                <br>
+                                <strong>Precio Base Actual:</strong> €<span id="resourcePricingBasePrice"></span>/hora
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs para diferentes tipos de precios -->
+                    <ul class="nav nav-tabs" id="resourcePricingTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="precio-base-tab" data-bs-toggle="tab" data-bs-target="#precio-base" type="button" role="tab">
+                                <i class="fas fa-tag me-2"></i>Precio Base
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="precio-hora-tab" data-bs-toggle="tab" data-bs-target="#precio-hora" type="button" role="tab">
+                                <i class="fas fa-clock me-2"></i>Precio por Hora
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="precio-dia-tab" data-bs-toggle="tab" data-bs-target="#precio-dia" type="button" role="tab">
+                                <i class="fas fa-calendar-day me-2"></i>Precio por Día
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="precio-temporada-tab" data-bs-toggle="tab" data-bs-target="#precio-temporada" type="button" role="tab">
+                                <i class="fas fa-calendar-week me-2"></i>Precio por Temporada
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de los tabs -->
+                    <div class="tab-content" id="resourcePricingTabContent">
+                        <!-- Tab Precio Base -->
+                        <div class="tab-pane fade show active" id="precio-base" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-edit me-2"></i>Editar Precio Base</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="editResourceBasePriceForm">
+                                                <div class="mb-3">
+                                                    <label for="editResourceBasePrice" class="form-label">Precio Base (€/hora)</label>
+                                                    <input type="number" class="form-control" id="editResourceBasePrice" step="0.01" min="0" required>
+                                                    <div class="form-text">Precio base por hora de uso del recurso</div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-save me-2"></i>Actualizar Precio Base
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-info-circle me-2"></i>Información del Precio Base</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Uso:</strong> Este precio se aplica como base para todas las reservas del recurso.</p>
+                                            <p><strong>Modificación:</strong> Los precios dinámicos pueden modificar este valor base.</p>
+                                            <p><strong>Facturación:</strong> Se calcula por hora de uso efectivo.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Precio por Hora -->
+                        <div class="tab-pane fade" id="precio-hora" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-plus me-2"></i>Nueva Regla de Precio por Hora</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="newResourceHourlyPriceForm">
+                                                <div class="mb-3">
+                                                    <label for="newResourceHourlyPriceName" class="form-label">Nombre de la Regla</label>
+                                                    <input type="text" class="form-control" id="newResourceHourlyPriceName" placeholder="Ej: Hora Pico" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="newResourceHourlyPriceStart" class="form-label">Hora Inicio</label>
+                                                            <input type="time" class="form-control" id="newResourceHourlyPriceStart" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="newResourceHourlyPriceEnd" class="form-label">Hora Fin</label>
+                                                            <input type="time" class="form-control" id="newResourceHourlyPriceEnd" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceHourlyPriceModifier" class="form-label">Modificador de Precio</label>
+                                                    <select class="form-select" id="newResourceHourlyPriceModifier" required>
+                                                        <option value="">Seleccionar tipo...</option>
+                                                        <option value="porcentaje">Porcentaje (%)</option>
+                                                        <option value="monto_fijo">Monto Fijo (€)</option>
+                                                        <option value="precio_fijo">Precio Fijo (€)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceHourlyPriceValue" class="form-label">Valor del Modificador</label>
+                                                    <input type="number" class="form-control" id="newResourceHourlyPriceValue" step="0.01" required>
+                                                    <div class="form-text">Valor del modificador (%, €, o precio fijo)</div>
+                                                </div>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-plus me-2"></i>Crear Regla de Precio
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-list me-2"></i>Reglas de Precio por Hora Activas</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="resourceHourlyPriceRules">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                    <p>Cargando reglas...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Precio por Día -->
+                        <div class="tab-pane fade" id="precio-dia" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-plus me-2"></i>Nueva Regla de Precio por Día</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="newResourceDailyPriceForm">
+                                                <div class="mb-3">
+                                                    <label for="newResourceDailyPriceName" class="form-label">Nombre de la Regla</label>
+                                                    <input type="text" class="form-control" id="newResourceDailyPriceName" placeholder="Ej: Fin de Semana" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceDailyPriceDays" class="form-label">Días de la Semana</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceMonday" value="1">
+                                                        <label class="form-check-label" for="newResourceDailyPriceMonday">Lunes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceTuesday" value="2">
+                                                        <label class="form-check-label" for="newResourceDailyPriceTuesday">Martes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceWednesday" value="3">
+                                                        <label class="form-check-label" for="newResourceDailyPriceWednesday">Miércoles</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceThursday" value="4">
+                                                        <label class="form-check-label" for="newResourceDailyPriceThursday">Jueves</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceFriday" value="5">
+                                                        <label class="form-check-label" for="newResourceDailyPriceFriday">Viernes</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceSaturday" value="6">
+                                                        <label class="form-check-label" for="newResourceDailyPriceSaturday">Sábado</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="newResourceDailyPriceSunday" value="0">
+                                                        <label class="form-check-label" for="newResourceDailyPriceSunday">Domingo</label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceDailyPriceModifier" class="form-label">Modificador de Precio</label>
+                                                    <select class="form-select" id="newResourceDailyPriceModifier" required>
+                                                        <option value="">Seleccionar tipo...</option>
+                                                        <option value="porcentaje">Porcentaje (%)</option>
+                                                        <option value="monto_fijo">Monto Fijo (€)</option>
+                                                        <option value="precio_fijo">Precio Fijo (€)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceDailyPriceValue" class="form-label">Valor del Modificador</label>
+                                                    <input type="number" class="form-control" id="newResourceDailyPriceValue" step="0.01" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-plus me-2"></i>Crear Regla de Precio
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-list me-2"></i>Reglas de Precio por Día Activas</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="resourceDailyPriceRules">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                    <p>Cargando reglas...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab Precio por Temporada -->
+                        <div class="tab-pane fade" id="precio-temporada" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-plus me-2"></i>Nueva Regla de Precio por Temporada</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="newResourceSeasonalPriceForm">
+                                                <div class="mb-3">
+                                                    <label for="newResourceSeasonalPriceName" class="form-label">Nombre de la Regla</label>
+                                                    <input type="text" class="form-control" id="newResourceSeasonalPriceName" placeholder="Ej: Temporada Alta" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="newResourceSeasonalPriceStart" class="form-label">Fecha Inicio</label>
+                                                            <input type="date" class="form-control" id="newResourceSeasonalPriceStart" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="newResourceSeasonalPriceEnd" class="form-label">Fecha Fin</label>
+                                                            <input type="date" class="form-control" id="newResourceSeasonalPriceEnd" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceSeasonalPriceModifier" class="form-label">Modificador de Precio</label>
+                                                    <select class="form-select" id="newResourceSeasonalPriceModifier" required>
+                                                        <option value="">Seleccionar tipo...</option>
+                                                        <option value="porcentaje">Porcentaje (%)</option>
+                                                        <option value="monto_fijo">Monto Fijo (€)</option>
+                                                        <option value="precio_fijo">Precio Fijo (€)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="newResourceSeasonalPriceValue" class="form-label">Valor del Modificador</label>
+                                                    <input type="number" class="form-control" id="newResourceSeasonalPriceValue" step="0.01" required>
+                                                </div>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-plus me-2"></i>Crear Regla de Precio
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-list me-2"></i>Reglas de Precio por Temporada Activas</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="resourceSeasonalPriceRules">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                    <p>Cargando reglas...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+                <!-- Tab de Precios -->
+                <div class="tab-pane fade" id="precios" role="tabpanel" aria-labelledby="precios-tab">
+                    <div class="container mt-4">
+                        <h2>💰 Gestión de Precios</h2>
+                        <p>Configura y gestiona precios para servicios y recursos.</p>
+                        
+                        <!-- Botones de acción -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary me-2" onclick="abrirModal('nuevoPrecioModal')">
+                                    <i class="fas fa-plus"></i> Nuevo Precio
+                                </button>
+                                <button class="btn btn-info me-2" onclick="cargarEstadisticasPrecios()">
+                                    <i class="fas fa-chart-bar"></i> Estadísticas
+                                </button>
+                                <button class="btn btn-success me-2" onclick="abrirCalculadoraPrecios()">
+                                    <i class="fas fa-calculator"></i> Calculadora
+                                </button>
+                                <button class="btn btn-warning" onclick="cargarPrecios()">
+                                    <i class="fas fa-sync"></i> Actualizar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filtros de precios -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="fas fa-filter me-2"></i>Filtros de Precios</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="filtroTipoPrecio" class="form-label">Tipo de Precio</label>
+                                        <select class="form-select" id="filtroTipoPrecio" onchange="aplicarFiltrosPrecios()">
+                                            <option value="">Todos los tipos</option>
+                                            <option value="base">Base</option>
+                                            <option value="descuento">Descuento</option>
+                                            <option value="recargo">Recargo</option>
+                                            <option value="hora">Por Hora</option>
+                                            <option value="dia">Por Día</option>
+                                            <option value="temporada">Temporada</option>
+                                            <option value="grupo">Grupo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroMoneda" class="form-label">Moneda</label>
+                                        <select class="form-select" id="filtroMoneda" onchange="aplicarFiltrosPrecios()">
+                                            <option value="">Todas las monedas</option>
+                                            <option value="EUR">EUR</option>
+                                            <option value="USD">USD</option>
+                                            <option value="GBP">GBP</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroEstado" class="form-label">Estado</label>
+                                        <select class="form-select" id="filtroEstado" onchange="aplicarFiltrosPrecios()">
+                                            <option value="">Todos los estados</option>
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="filtroRangoPrecio" class="form-label">Rango de Precio</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="filtroPrecioMin" placeholder="Min" onchange="aplicarFiltrosPrecios()">
+                                            <span class="input-group-text">-</span>
+                                            <input type="number" class="form-control" id="filtroPrecioMax" placeholder="Max" onchange="aplicarFiltrosPrecios()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de precios -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list me-2"></i>Lista de Precios</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="preciosContainer">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                        <p class="mt-2">Cargando precios...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard de estadísticas -->
+                        <div class="row mt-4" id="estadisticasPreciosContainer" style="display: none;">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary">
+                                            <i class="fas fa-tag me-2"></i>Total Precios
+                                        </h5>
+                                        <h3 id="totalPrecios" class="text-primary">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-success">
+                                            <i class="fas fa-check-circle me-2"></i>Activos
+                                        </h5>
+                                        <h3 id="preciosActivos" class="text-success">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-info">
+                                            <i class="fas fa-euro-sign me-2"></i>Precio Promedio
+                                        </h5>
+                                        <h3 id="precioPromedio" class="text-info">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-warning">
+                                            <i class="fas fa-chart-line me-2"></i>Rango
+                                        </h5>
+                                        <h3 id="rangoPrecio" class="text-warning">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- ======================================== -->
+    <!-- MODALES PARA GESTIÓN DE PAGOS -->
+    <!-- ======================================== -->
+
+    <!-- Modal Nuevo Pago -->
+    <div class="modal fade" id="nuevoPagoModal" tabindex="-1" aria-labelledby="nuevoPagoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoPagoModalLabel">
+                        <i class="fas fa-plus me-2"></i>Nuevo Pago
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevoPagoForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPagoReserva" class="form-label">Reserva</label>
+                                    <select class="form-select" id="nuevoPagoReserva" required>
+                                        <option value="">Seleccionar reserva...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoPagoCliente" class="form-label">Cliente</label>
+                                    <select class="form-select" id="nuevoPagoCliente" required>
+                                        <option value="">Seleccionar cliente...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoPagoMonto" class="form-label">Monto (€)</label>
+                                    <input type="number" class="form-control" id="nuevoPagoMonto" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPagoMetodo" class="form-label">Método de Pago</label>
+                                    <select class="form-select" id="nuevoPagoMetodo" required>
+                                        <option value="">Seleccionar método...</option>
+                                        <option value="stripe">Stripe</option>
+                                        <option value="paypal">PayPal</option>
+                                        <option value="transferencia">Transferencia</option>
+                                        <option value="efectivo">Efectivo</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoPagoMoneda" class="form-label">Moneda</label>
+                                    <select class="form-select" id="nuevoPagoMoneda" required>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoPagoDescripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="nuevoPagoDescripcion" rows="3" placeholder="Descripción del pago..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevoPago()">
+                        <i class="fas fa-save me-2"></i>Crear Pago
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Factura -->
+    <div class="modal fade" id="nuevaFacturaModal" tabindex="-1" aria-labelledby="nuevaFacturaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevaFacturaModalLabel">
+                        <i class="fas fa-file-invoice me-2"></i>Nueva Factura
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevaFacturaForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaPago" class="form-label">Pago Asociado</label>
+                                    <select class="form-select" id="nuevaFacturaPago" required>
+                                        <option value="">Seleccionar pago...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaCliente" class="form-label">Cliente</label>
+                                    <select class="form-select" id="nuevaFacturaCliente" required>
+                                        <option value="">Seleccionar cliente...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaSubtotal" class="form-label">Subtotal (€)</label>
+                                    <input type="number" class="form-control" id="nuevaFacturaSubtotal" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaIVA" class="form-label">IVA (%)</label>
+                                    <input type="number" class="form-control" id="nuevaFacturaIVA" step="0.01" min="0" value="21" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaTotal" class="form-label">Total (€)</label>
+                                    <input type="number" class="form-control" id="nuevaFacturaTotal" step="0.01" min="0" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaFacturaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                                    <input type="date" class="form-control" id="nuevaFacturaVencimiento">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevaFactura()">
+                        <i class="fas fa-save me-2"></i>Crear Factura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Reembolso -->
+    <div class="modal fade" id="nuevoReembolsoModal" tabindex="-1" aria-labelledby="nuevoReembolsoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoReembolsoModalLabel">
+                        <i class="fas fa-undo me-2"></i>Nuevo Reembolso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevoReembolsoForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoReembolsoPago" class="form-label">Pago a Reembolsar</label>
+                                    <select class="form-select" id="nuevoReembolsoPago" required>
+                                        <option value="">Seleccionar pago...</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoReembolsoMonto" class="form-label">Monto a Reembolsar (€)</label>
+                                    <input type="number" class="form-control" id="nuevoReembolsoMonto" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoReembolsoMotivo" class="form-label">Motivo del Reembolso</label>
+                                    <textarea class="form-control" id="nuevoReembolsoMotivo" rows="3" placeholder="Motivo del reembolso..." required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoReembolsoAprobador" class="form-label">Aprobado por</label>
+                                    <select class="form-select" id="nuevoReembolsoAprobador">
+                                        <option value="">Seleccionar usuario...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevoReembolso()">
+                        <i class="fas fa-save me-2"></i>Crear Reembolso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- MODALES PARA GESTIÓN DE INTEGRACIONES -->
+    <!-- ======================================== -->
+
+    <!-- Modal Nueva Integración -->
+    <div class="modal fade" id="nuevaIntegracionModal" tabindex="-1" aria-labelledby="nuevaIntegracionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevaIntegracionModalLabel">
+                        <i class="fas fa-plus me-2"></i>Nueva Integración
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevaIntegracionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionNombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nuevaIntegracionNombre" placeholder="Ej: Email Marketing" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionTipo" class="form-label">Tipo de Integración</label>
+                                    <select class="form-select" id="nuevaIntegracionTipo" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="email">Email</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="google_calendar">Google Calendar</option>
+                                        <option value="stripe">Stripe</option>
+                                        <option value="paypal">PayPal</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionEstado" class="form-label">Estado</label>
+                                    <select class="form-select" id="nuevaIntegracionEstado" required>
+                                        <option value="configurando">Configurando</option>
+                                        <option value="activa">Activa</option>
+                                        <option value="inactiva">Inactiva</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionDescripcion" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="nuevaIntegracionDescripcion" rows="3" placeholder="Descripción de la integración..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionWebhook" class="form-label">URL del Webhook</label>
+                                    <input type="url" class="form-control" id="nuevaIntegracionWebhook" placeholder="https://webhook.site/...">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevaIntegracionConfig" class="form-label">Configuración (JSON)</label>
+                                    <textarea class="form-control" id="nuevaIntegracionConfig" rows="3" placeholder='{"api_key": "..."}'></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevaIntegracion()">
+                        <i class="fas fa-save me-2"></i>Crear Integración
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Webhook -->
+    <div class="modal fade" id="nuevoWebhookModal" tabindex="-1" aria-labelledby="nuevoWebhookModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoWebhookModalLabel">
+                        <i class="fas fa-link me-2"></i>Nuevo Webhook
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevoWebhookForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoWebhookNombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nuevoWebhookNombre" placeholder="Ej: Webhook de Prueba" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoWebhookURL" class="form-label">URL del Webhook</label>
+                                    <input type="url" class="form-control" id="nuevoWebhookURL" placeholder="https://webhook.site/..." required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoWebhookEvento" class="form-label">Evento</label>
+                                    <select class="form-select" id="nuevoWebhookEvento" required>
+                                        <option value="">Seleccionar evento...</option>
+                                        <option value="reserva_creada">Reserva Creada</option>
+                                        <option value="reserva_actualizada">Reserva Actualizada</option>
+                                        <option value="reserva_cancelada">Reserva Cancelada</option>
+                                        <option value="pago_completado">Pago Completado</option>
+                                        <option value="pago_fallido">Pago Fallido</option>
+                                        <option value="factura_generada">Factura Generada</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoWebhookMetodo" class="form-label">Método HTTP</label>
+                                    <select class="form-select" id="nuevoWebhookMetodo" required>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="PATCH">PATCH</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nuevoWebhookSecret" class="form-label">Clave Secreta</label>
+                                    <input type="text" class="form-control" id="nuevoWebhookSecret" placeholder="Clave para verificar webhook">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="nuevoWebhookSSL" checked>
+                                        <label class="form-check-label" for="nuevoWebhookSSL">
+                                            Verificar SSL
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevoWebhook()">
+                        <i class="fas fa-save me-2"></i>Crear Webhook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- MODALES PARA GESTIÓN DE PRECIOS -->
+    <!-- ======================================== -->
+
+    <!-- Modal Nuevo Precio -->
+    <div class="modal fade" id="nuevoPrecioModal" tabindex="-1" aria-labelledby="nuevoPrecioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoPrecioModalLabel">
+                        <i class="fas fa-plus me-2"></i>Nuevo Precio
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nuevoPrecioForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioServicio" class="form-label">Servicio (opcional)</label>
+                                    <select class="form-select" id="nuevoPrecioServicio">
+                                        <option value="">Seleccionar servicio...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioRecurso" class="form-label">Recurso (opcional)</label>
+                                    <select class="form-select" id="nuevoPrecioRecurso">
+                                        <option value="">Seleccionar recurso...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioTipo" class="form-label">Tipo de Precio</label>
+                                    <select class="form-select" id="nuevoPrecioTipo" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="base">Base</option>
+                                        <option value="descuento">Descuento</option>
+                                        <option value="recargo">Recargo</option>
+                                        <option value="hora">Por Hora</option>
+                                        <option value="dia">Por Día</option>
+                                        <option value="temporada">Temporada</option>
+                                        <option value="grupo">Grupo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioMoneda" class="form-label">Moneda</label>
+                                    <select class="form-select" id="nuevoPrecioMoneda" required>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="GBP">GBP</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioNombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nuevoPrecioNombre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioPrecio" class="form-label">Precio Base</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="nuevoPrecioPrecio" required>
+                                        <span class="input-group-text" id="nuevoPrecioMonedaSymbol">€</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nuevoPrecioDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="nuevoPrecioDescripcion" rows="2"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nuevoPrecioPrioridad" class="form-label">Prioridad</label>
+                                    <input type="number" class="form-control" id="nuevoPrecioPrioridad" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="nuevoPrecioActivo" checked>
+                                    <label class="form-check-label" for="nuevoPrecioActivo">Activo</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección de condiciones especiales -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-cogs me-2"></i>Condiciones Especiales (Opcional)
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioFechaInicio" class="form-label">Fecha Inicio</label>
+                                            <input type="datetime-local" class="form-control" id="nuevoPrecioFechaInicio">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioFechaFin" class="form-label">Fecha Fin</label>
+                                            <input type="datetime-local" class="form-control" id="nuevoPrecioFechaFin">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioCantidadMin" class="form-label">Cantidad Mínima</label>
+                                            <input type="number" class="form-control" id="nuevoPrecioCantidadMin" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioCantidadMax" class="form-label">Cantidad Máxima</label>
+                                            <input type="number" class="form-control" id="nuevoPrecioCantidadMax" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioHoraInicio" class="form-label">Hora Inicio</label>
+                                            <input type="time" class="form-control" id="nuevoPrecioHoraInicio">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioHoraFin" class="form-label">Hora Fin</label>
+                                            <input type="time" class="form-control" id="nuevoPrecioHoraFin">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="nuevoPrecioDiasSemana" class="form-label">Días Semana</label>
+                                            <input type="text" class="form-control" id="nuevoPrecioDiasSemana" placeholder="1,2,3,4,5">
+                                            <small class="form-text text-muted">Ej: 1,2,3,4,5 (L-V) o 6,7 (Fin de semana)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="crearNuevoPrecio()">
+                        <i class="fas fa-save me-2"></i>Crear Precio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Calculadora de Precios -->
+    <div class="modal fade" id="calculadoraPreciosModal" tabindex="-1" aria-labelledby="calculadoraPreciosModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="calculadoraPreciosModalLabel">
+                        <i class="fas fa-calculator me-2"></i>Calculadora de Precios
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="calculadoraPreciosForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcServicio" class="form-label">Servicio</label>
+                                    <select class="form-select" id="calcServicio">
+                                        <option value="">Seleccionar servicio...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcRecurso" class="form-label">Recurso</label>
+                                    <select class="form-select" id="calcRecurso">
+                                        <option value="">Seleccionar recurso...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcFechaInicio" class="form-label">Fecha y Hora Inicio</label>
+                                    <input type="datetime-local" class="form-control" id="calcFechaInicio" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcFechaFin" class="form-label">Fecha y Hora Fin</label>
+                                    <input type="datetime-local" class="form-control" id="calcFechaFin" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcCantidad" class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="calcCantidad" value="1" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="calcCliente" class="form-label">Cliente (para descuentos)</label>
+                                    <select class="form-select" id="calcCliente">
+                                        <option value="">Seleccionar cliente...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid mb-3">
+                            <button type="button" class="btn btn-primary" onclick="calcularPrecioCompleto()">
+                                <i class="fas fa-calculator me-2"></i>Calcular Precio
+                            </button>
+                        </div>
+                        
+                        <!-- Resultado del cálculo -->
+                        <div id="resultadoCalculoPrecio" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-receipt me-2"></i>Resultado del Cálculo
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="text-center">
+                                                <h6 class="text-muted">Precio Base</h6>
+                                                <h4 id="resultadoPrecioBase" class="text-info">-</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-center">
+                                                <h6 class="text-muted">Precio Final</h6>
+                                                <h4 id="resultadoPrecioFinal" class="text-primary">-</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="desgloseCalculoPrecio" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/app.js"></script>
+    <script src="/static/precios.js"></script>
 </body>
 
 </html>

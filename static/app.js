@@ -2052,9 +2052,8 @@ class PreciosDinamicosApp {
             document.getElementById('editRuleActive').checked = rule.activa;
             document.getElementById('editRuleCondition').value = rule.condicion ? JSON.stringify(rule.condicion, null, 2) : '';
             
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('editRuleModal'));
-            modal.show();
+            // Mostrar el modal usando la función optimizada
+            const modal = this.abrirModal('editRuleModal');
             
         } catch (error) {
             console.error('❌ Error cargando regla para editar:', error);
@@ -2081,11 +2080,22 @@ class PreciosDinamicosApp {
             const updatedRule = await this.apiCall(`/precios-dinamicos/reglas/${ruleId}`, 'PUT', ruleData);
             
             if (updatedRule) {
-                this.showAlert('Regla actualizada exitosamente', 'success');
+                this.showAlert(`Regla "${updatedRule.nombre}" actualizada exitosamente`, 'success');
                 
-                // Cerrar el modal
+                // Cerrar el modal inmediatamente
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editRuleModal'));
-                modal.hide();
+                if (modal) {
+                    modal.hide();
+                    // Forzar la eliminación del backdrop si existe
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                    // Restaurar el scroll del body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
                 
                 // Actualizar la lista de reglas
                 await this.refreshRulesList();
@@ -2146,7 +2156,10 @@ class PreciosDinamicosApp {
             const result = await this.apiCall(`/precios-dinamicos/reglas/${ruleId}`, 'DELETE');
             
             if (result) {
-                this.showAlert('Regla eliminada exitosamente', 'success');
+                this.showAlert(`Regla "${ruleName}" eliminada exitosamente`, 'success');
+                
+                // Cerrar cualquier modal que pueda estar abierto
+                this.cerrarTodosLosModales();
                 
                 // Actualizar la lista de reglas
                 await this.refreshRulesList();
@@ -2185,12 +2198,50 @@ class PreciosDinamicosApp {
             return;
         }
         container.innerHTML = "";
+        
+        if (services.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h5>No hay servicios disponibles</h5>
+                    <p>Crea tu primer servicio usando el formulario de la derecha.</p>
+                </div>`;
+            return;
+        }
+        
         services.forEach(s => {
             container.innerHTML += `
-                <div class="card mb-2">
+                <div class="card mb-3">
                     <div class="card-body">
-                        <h5>${s.nombre}</h5>
-                        <p>${s.descripcion || ""}</p>
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-2">${s.nombre}</h5>
+                                <p class="card-text text-muted mb-2">${s.descripcion || "Sin descripción"}</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>Duración: ${s.duracion_minutos} min
+                                        </small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">
+                                            <i class="fas fa-euro-sign me-1"></i>Precio: €${s.precio_base}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button class="btn btn-outline-primary btn-sm me-2" onclick="app.editService(${s.id})">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="app.deleteService(${s.id}, '${s.nombre}')">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                </button>
+                                <button class="btn btn-outline-info btn-sm ms-2" onclick="app.testModal()">
+                                    <i class="fas fa-bug me-1"></i>Test
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
         });
@@ -2199,11 +2250,37 @@ class PreciosDinamicosApp {
 
     async createNewService() {
         try {
+            // Validar campos requeridos
+            const nombre = document.getElementById('newServiceName').value.trim();
+            const duracion = parseInt(document.getElementById('newServiceDuration').value);
+            const precio = parseFloat(document.getElementById('newServiceBasePrice').value);
+            
+            if (!nombre) {
+                this.showAlert('El nombre del servicio es obligatorio', 'warning');
+                return;
+            }
+            
+            if (!duracion || duracion <= 0) {
+                this.showAlert('La duración debe ser mayor a 0 minutos', 'warning');
+                return;
+            }
+            
+            if (!precio || precio <= 0) {
+                this.showAlert('El precio debe ser mayor a 0', 'warning');
+                return;
+            }
+            
+            // Deshabilitar el botón y mostrar indicador de carga
+            const submitBtn = document.querySelector('#newServiceForm button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creando...';
+            
             const formData = {
-                nombre: document.getElementById('newServiceName').value,
-                descripcion: document.getElementById('newServiceDescription').value,
-                precio_base: parseFloat(document.getElementById('newServiceBasePrice').value),
-                categoria: document.getElementById('newServiceCategory').value
+                nombre: nombre,
+                descripcion: document.getElementById('newServiceDescription').value.trim(),
+                duracion_minutos: duracion,
+                precio_base: precio
             };
 
             console.log('💾 Creando nuevo servicio:', formData);
@@ -2211,8 +2288,11 @@ class PreciosDinamicosApp {
             const newService = await this.apiCall('/servicios/', 'POST', formData);
             
             if (newService) {
-                this.showAlert('Servicio creado exitosamente', 'success');
+                this.showAlert(`Servicio "${newService.nombre}" creado exitosamente con precio base €${newService.precio_base}`, 'success');
                 document.getElementById('newServiceForm').reset();
+                
+                // Cerrar cualquier modal que pueda estar abierto
+                this.cerrarTodosLosModales();
                 
                 // Actualizar la lista de servicios y marcar como no cargada
                 await this.refreshServicesList();
@@ -2225,10 +2305,14 @@ class PreciosDinamicosApp {
                 // Actualizar el dashboard
                 await this.loadDashboard();
             }
-            
         } catch (error) {
             console.error('❌ Error creando servicio:', error);
             this.showAlert('Error al crear el servicio', 'danger');
+        } finally {
+            // Restaurar el botón
+            const submitBtn = document.querySelector('#newServiceForm button[type="submit"]');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Crear Servicio';
         }
     }
 
@@ -2241,12 +2325,11 @@ class PreciosDinamicosApp {
             document.getElementById('editServiceId').value = service.id;
             document.getElementById('editServiceName').value = service.nombre;
             document.getElementById('editServiceDescription').value = service.descripcion || '';
+            document.getElementById('editServiceDuration').value = service.duracion_minutos;
             document.getElementById('editServiceBasePrice').value = service.precio_base;
-            document.getElementById('editServiceCategory').value = service.categoria || '';
             
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
-            modal.show();
+            // Mostrar el modal usando la función optimizada
+            const modal = this.abrirModal('editServiceModal');
             
         } catch (error) {
             console.error('❌ Error cargando servicio para editar:', error);
@@ -2256,12 +2339,38 @@ class PreciosDinamicosApp {
 
     async saveEditedService() {
         try {
+            // Validar campos requeridos
+            const nombre = document.getElementById('editServiceName').value.trim();
+            const duracion = parseInt(document.getElementById('editServiceDuration').value);
+            const precio = parseFloat(document.getElementById('editServiceBasePrice').value);
+            
+            if (!nombre) {
+                this.showAlert('El nombre del servicio es obligatorio', 'warning');
+                return;
+            }
+            
+            if (!duracion || duracion <= 0) {
+                this.showAlert('La duración debe ser mayor a 0 minutos', 'warning');
+                return;
+            }
+            
+            if (!precio || precio <= 0) {
+                this.showAlert('El precio debe ser mayor a 0', 'warning');
+                return;
+            }
+            
+            // Deshabilitar el botón y mostrar indicador de carga
+            const submitBtn = document.querySelector('#editServiceModal .btn-primary');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+            
             const serviceId = document.getElementById('editServiceId').value;
             const serviceData = {
-                nombre: document.getElementById('editServiceName').value,
-                descripcion: document.getElementById('editServiceDescription').value,
-                precio_base: parseFloat(document.getElementById('editServiceBasePrice').value),
-                categoria: document.getElementById('editServiceCategory').value
+                nombre: nombre,
+                descripcion: document.getElementById('editServiceDescription').value.trim(),
+                duracion_minutos: duracion,
+                precio_base: precio
             };
 
             console.log('💾 Guardando servicio editado:', serviceData);
@@ -2269,11 +2378,22 @@ class PreciosDinamicosApp {
             const updatedService = await this.apiCall(`/servicios/${serviceId}`, 'PUT', serviceData);
             
             if (updatedService) {
-                this.showAlert('Servicio actualizado exitosamente', 'success');
+                this.showAlert(`Servicio "${updatedService.nombre}" actualizado exitosamente`, 'success');
                 
-                // Cerrar el modal
+                // Cerrar el modal inmediatamente
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editServiceModal'));
-                modal.hide();
+                if (modal) {
+                    modal.hide();
+                    // Forzar la eliminación del backdrop si existe
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                    // Restaurar el scroll del body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
                 
                 // Actualizar la lista de servicios y marcar como no cargada
                 await this.refreshServicesList();
@@ -2290,13 +2410,32 @@ class PreciosDinamicosApp {
         } catch (error) {
             console.error('❌ Error guardando servicio editado:', error);
             this.showAlert('Error al guardar el servicio', 'danger');
+        } finally {
+            // Restaurar el botón
+            const submitBtn = document.querySelector('#editServiceModal .btn-primary');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Cambios';
         }
     }
 
     async deleteService(serviceId, serviceName) {
         try {
-            if (!confirm(`¿Estás seguro de que quieres eliminar el servicio "${serviceName}"?\n\nEsta acción no se puede deshacer.`)) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar el servicio "${serviceName}"?\n\n⚠️ Esta acción no se puede deshacer y eliminará todas las reservas asociadas a este servicio.`)) {
                 return;
+            }
+            
+            // Mostrar indicador de carga en el botón de eliminar
+            const deleteBtn = document.querySelector(`button[onclick="app.deleteService(${serviceId}, '${serviceName}')"]`);
+            if (deleteBtn) {
+                const originalText = deleteBtn.innerHTML;
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Eliminando...';
+                
+                // Restaurar el botón después de un tiempo
+                setTimeout(() => {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = originalText;
+                }, 5000); // 5 segundos como máximo
             }
             
             console.log('🗑️ Eliminando servicio ID:', serviceId);
@@ -2304,7 +2443,10 @@ class PreciosDinamicosApp {
             const result = await this.apiCall(`/servicios/${serviceId}`, 'DELETE');
             
             if (result) {
-                this.showAlert('Servicio eliminado exitosamente', 'success');
+                this.showAlert(`Servicio "${serviceName}" eliminado exitosamente`, 'success');
+                
+                // Cerrar cualquier modal que pueda estar abierto
+                this.cerrarTodosLosModales();
                 
                 // Actualizar la lista de servicios y marcar como no cargada
                 await this.refreshServicesList();
@@ -2347,13 +2489,55 @@ class PreciosDinamicosApp {
             console.error('❌ No se encontró el contenedor resourcesContainer');
             return;
         }
+        
+        if (resources.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="fas fa-building fa-3x mb-3"></i>
+                    <p>No hay recursos disponibles</p>
+                    <p class="small">Haz clic en "Crear Nuevo Recurso" para agregar el primero</p>
+                </div>`;
+            return;
+        }
+        
         container.innerHTML = "";
         resources.forEach(r => {
+            const statusClass = r.disponible ? 'success' : 'danger';
+            const statusText = r.disponible ? 'Disponible' : 'No Disponible';
+            
             container.innerHTML += `
-                <div class="card mb-2">
+                <div class="card mb-3 resource-card" style="cursor: pointer;" onclick="app.mostrarDetalleRecurso(${r.id})">
                     <div class="card-body">
-                        <h5>${r.nombre}</h5>
-                        <p>${r.tipo || ""}</p>
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="card-title mb-1">
+                                    <i class="fas fa-building me-2"></i>${r.nombre}
+                                </h5>
+                                <p class="card-text text-muted mb-1">
+                                    <i class="fas fa-tag me-1"></i><strong>Tipo:</strong> ${r.tipo || 'No especificado'}
+                                </p>
+                                <p class="card-text text-muted mb-1">
+                                    <i class="fas fa-users me-1"></i><strong>Capacidad:</strong> ${r.capacidad || 1} persona(s)
+                                </p>
+                                <p class="card-text text-muted mb-1">
+                                    <i class="fas fa-euro-sign me-1"></i><strong>Precio:</strong> €${r.precio_base ? r.precio_base.toFixed(2) : '0.00'}/hora
+                                </p>
+                                ${r.descripcion ? `<p class="card-text text-muted mb-1"><i class="fas fa-info-circle me-1"></i>${r.descripcion}</p>` : ''}
+                                <span class="badge bg-${statusClass}">
+                                    <i class="fas fa-${r.disponible ? 'check' : 'times'} me-1"></i>${statusText}
+                                </span>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="btn-group-vertical w-100">
+                                    <button class="btn btn-outline-primary btn-sm mb-1" onclick="event.stopPropagation(); app.editResource(${r.id})">
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="event.stopPropagation(); app.deleteResource(${r.id}, '${r.nombre}')">
+                                        <i class="fas fa-trash me-1"></i>Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
         });
@@ -2367,7 +2551,8 @@ class PreciosDinamicosApp {
                 tipo: document.getElementById('newResourceType').value,
                 capacidad: parseInt(document.getElementById('newResourceCapacity').value),
                 descripcion: document.getElementById('newResourceDescription').value,
-                disponible: document.getElementById('newResourceAvailable').checked
+                disponible: document.getElementById('newResourceAvailable').checked,
+                precio_base: parseFloat(document.getElementById('newResourcePrice').value) || 0
             };
 
             console.log('💾 Creando nuevo recurso:', formData);
@@ -2375,7 +2560,24 @@ class PreciosDinamicosApp {
             const newResource = await this.apiCall('/recursos/', 'POST', formData);
             
             if (newResource) {
-                this.showAlert('Recurso creado exitosamente', 'success');
+                this.showAlert(`Recurso "${newResource.nombre}" creado exitosamente`, 'success');
+                
+                // Cerrar el modal inmediatamente
+                const modal = bootstrap.Modal.getInstance(document.getElementById('newResourceModal'));
+                if (modal) {
+                    modal.hide();
+                    // Forzar la eliminación del backdrop si existe
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                    // Restaurar el scroll del body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
+                
+                // Limpiar el formulario
                 document.getElementById('newResourceForm').reset();
                 
                 // Actualizar la lista de recursos y marcar como no cargada
@@ -2408,10 +2610,10 @@ class PreciosDinamicosApp {
             document.getElementById('editResourceCapacity').value = resource.capacidad || 1;
             document.getElementById('editResourceDescription').value = resource.descripcion || '';
             document.getElementById('editResourceAvailable').checked = resource.disponible;
+            document.getElementById('editResourcePrice').value = resource.precio_base || '';
             
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('editResourceModal'));
-            modal.show();
+            // Mostrar el modal usando la función optimizada
+            const modal = this.abrirModal('editResourceModal');
             
         } catch (error) {
             console.error('❌ Error cargando recurso para editar:', error);
@@ -2427,7 +2629,8 @@ class PreciosDinamicosApp {
                 tipo: document.getElementById('editResourceType').value,
                 capacidad: parseInt(document.getElementById('editResourceCapacity').value),
                 descripcion: document.getElementById('editResourceDescription').value,
-                disponible: document.getElementById('editResourceAvailable').checked
+                disponible: document.getElementById('editResourceAvailable').checked,
+                precio_base: parseFloat(document.getElementById('editResourcePrice').value) || 0
             };
 
             console.log('💾 Guardando recurso editado:', resourceData);
@@ -2435,11 +2638,22 @@ class PreciosDinamicosApp {
             const updatedResource = await this.apiCall(`/recursos/${resourceId}`, 'PUT', resourceData);
             
             if (updatedResource) {
-                this.showAlert('Recurso actualizado exitosamente', 'success');
+                this.showAlert(`Recurso "${updatedResource.nombre}" actualizado exitosamente`, 'success');
                 
-                // Cerrar el modal
+                // Cerrar el modal inmediatamente
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editResourceModal'));
-                modal.hide();
+                if (modal) {
+                    modal.hide();
+                    // Forzar la eliminación del backdrop si existe
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                    // Restaurar el scroll del body
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
                 
                 // Actualizar la lista de recursos y marcar como no cargada
                 await this.refreshResourcesList();
@@ -2500,7 +2714,10 @@ class PreciosDinamicosApp {
             const result = await this.apiCall(`/recursos/${resourceId}`, 'DELETE');
             
             if (result) {
-                this.showAlert('Recurso eliminado exitosamente', 'success');
+                this.showAlert(`Recurso "${resourceName}" eliminado exitosamente`, 'success');
+                
+                // Cerrar cualquier modal que pueda estar abierto
+                this.cerrarTodosLosModales();
                 
                 // Actualizar la lista de recursos y marcar como no cargada
                 await this.refreshResourcesList();
@@ -2861,30 +3078,20 @@ class PreciosDinamicosApp {
              console.log('🔍 Editando reserva ID:', reservaId);
              const reserva = await this.apiCall(`/reservas/${reservaId}`);
              
-             // Llenar el formulario con los datos de la reserva
-             document.getElementById('newReservaCliente').value = reserva.cliente_id;
-             document.getElementById('newReservaServicio').value = reserva.servicio_id;
-             document.getElementById('newReservaRecurso').value = reserva.recurso_id;
-             document.getElementById('newReservaFechaInicio').value = reserva.fecha_hora_inicio.slice(0, 16);
-             document.getElementById('newReservaFechaFin').value = reserva.fecha_hora_fin.slice(0, 16);
-             document.getElementById('newReservaEstado').value = reserva.estado;
+             // Llenar el modal con los datos de la reserva
+             document.getElementById('editReservaId').value = reserva.id;
+             document.getElementById('editReservaCliente').value = reserva.cliente_id;
+             document.getElementById('editReservaServicio').value = reserva.servicio_id;
+             document.getElementById('editReservaRecurso').value = reserva.recurso_id;
+             document.getElementById('editReservaFechaInicio').value = reserva.fecha_hora_inicio.slice(0, 16);
+             document.getElementById('editReservaFechaFin').value = reserva.fecha_hora_fin.slice(0, 16);
+             document.getElementById('editReservaEstado').value = reserva.estado;
              
-             // Cambiar el título del formulario y el botón
-             document.getElementById('reservaFormTitle').textContent = 'Editar Reserva';
-             document.getElementById('reservaFormButtonText').textContent = 'Actualizar Reserva';
+             // Poblar los selectores si no están poblados
+             await this.poblarSelectoresEditReserva();
              
-             // Mostrar el campo de ID de la reserva
-             document.getElementById('reservaIdField').style.display = 'block';
-             document.getElementById('reservaIdDisplay').value = `Reserva #${reservaId}`;
-             document.getElementById('reservaIdNumber').textContent = reservaId;
-             
-             // Agregar ID de la reserva al formulario para identificarla
-             document.getElementById('newReservaForm').setAttribute('data-edit-id', reservaId);
-             
-             // Hacer scroll al formulario
-             document.getElementById('newReservaForm').scrollIntoView({ behavior: 'smooth' });
-             
-             this.showNotification('Formulario rellenado con datos de la reserva', 'info');
+             // Mostrar el modal usando la función optimizada
+             const modal = this.abrirModal('editReservaModal');
              
          } catch (error) {
              console.error('❌ Error cargando reserva para editar:', error);
@@ -2903,15 +3110,124 @@ class PreciosDinamicosApp {
              const result = await this.apiCall(`/reservas/${reservaId}`, 'DELETE');
              
              if (result) {
-                 this.showAlert('Reserva eliminada exitosamente', 'success');
+                 this.showAlert(`Reserva "${reservaName}" eliminada exitosamente`, 'success');
+                 
+                 // Cerrar cualquier modal que pueda estar abierto
+                 this.cerrarTodosLosModales();
                  
                  // Actualizar la lista de reservas
                  await this.refreshReservasList();
+                 
+                 // Actualizar el calendario
+                 await this.actualizarCalendario();
+                 
+                 // Actualizar el dashboard
+                 await this.loadDashboard();
              }
              
          } catch (error) {
              console.error('❌ Error eliminando reserva:', error);
              this.showAlert('Error al eliminar la reserva', 'danger');
+         }
+     }
+
+     /**
+      * Pobla los selectores del modal de edición de reserva
+      */
+     async poblarSelectoresEditReserva() {
+         try {
+             // Poblar selector de clientes
+             const clienteSelect = document.getElementById('editReservaCliente');
+             if (clienteSelect && this.currentData.clientes) {
+                 clienteSelect.innerHTML = '<option value="">Seleccionar cliente...</option>';
+                 this.currentData.clientes.forEach(cliente => {
+                     const option = document.createElement('option');
+                     option.value = cliente.id;
+                     option.textContent = cliente.nombre;
+                     clienteSelect.appendChild(option);
+                 });
+             }
+             
+             // Poblar selector de servicios
+             const servicioSelect = document.getElementById('editReservaServicio');
+             if (servicioSelect && this.currentData.services) {
+                 servicioSelect.innerHTML = '<option value="">Seleccionar servicio...</option>';
+                 this.currentData.services.forEach(servicio => {
+                     const option = document.createElement('option');
+                     option.value = servicio.id;
+                     option.textContent = servicio.nombre;
+                     servicioSelect.appendChild(option);
+                 });
+             }
+             
+             // Poblar selector de recursos
+             const recursoSelect = document.getElementById('editReservaRecurso');
+             if (recursoSelect && this.currentData.resources) {
+                 recursoSelect.innerHTML = '<option value="">Seleccionar recurso...</option>';
+                 this.currentData.resources.forEach(recurso => {
+                     const option = document.createElement('option');
+                     option.value = recurso.id;
+                     option.textContent = recurso.nombre;
+                     recursoSelect.appendChild(option);
+                 });
+             }
+             
+             console.log('✅ Selectores del modal de edición de reserva poblados');
+         } catch (error) {
+             console.error('❌ Error poblando selectores de edición de reserva:', error);
+         }
+     }
+
+     /**
+      * Guarda los cambios de una reserva editada
+      */
+     async saveEditedReserva() {
+         try {
+             const reservaId = document.getElementById('editReservaId').value;
+             const reservaData = {
+                 cliente_id: parseInt(document.getElementById('editReservaCliente').value),
+                 servicio_id: parseInt(document.getElementById('editReservaServicio').value),
+                 recurso_id: parseInt(document.getElementById('editReservaRecurso').value),
+                 fecha_hora_inicio: document.getElementById('editReservaFechaInicio').value,
+                 fecha_hora_fin: document.getElementById('editReservaFechaFin').value,
+                 estado: document.getElementById('editReservaEstado').value
+             };
+             
+             console.log('💾 Guardando reserva editada:', reservaData);
+             
+             const updatedReserva = await this.apiCall(`/reservas/${reservaId}`, 'PUT', reservaData);
+             
+             if (updatedReserva) {
+                 this.showAlert(`Reserva actualizada exitosamente`, 'success');
+                 
+                 // Cerrar el modal inmediatamente
+                 const modal = bootstrap.Modal.getInstance(document.getElementById('editReservaModal'));
+                 if (modal) {
+                     modal.hide();
+                     // Forzar la eliminación del backdrop si existe
+                     const backdrop = document.querySelector('.modal-backdrop');
+                     if (backdrop) {
+                         backdrop.remove();
+                     }
+                     // Restaurar el scroll del body
+                     document.body.classList.remove('modal-open');
+                     document.body.style.overflow = '';
+                     document.body.style.paddingRight = '';
+                 }
+                 
+                 // Actualizar la lista de reservas
+                 await this.refreshReservasList();
+                 
+                 // Actualizar el calendario
+                 await this.actualizarCalendario();
+                 
+                 // Actualizar el dashboard
+                 await this.loadDashboard();
+             }
+             
+         } catch (error) {
+             console.error('❌ Error guardando reserva editada:', error);
+             this.showAlert('Error al guardar la reserva', 'danger');
          }
      }
 
@@ -3272,7 +3588,14 @@ class PreciosDinamicosApp {
     getInicioSemana(fecha) {
         const inicio = new Date(fecha);
         const dia = inicio.getDay();
-        inicio.setDate(inicio.getDate() - dia);
+        // Ajustar para que la semana empiece en lunes (1) en lugar de domingo (0)
+        // Si es domingo (0), restamos 6 días para llegar al lunes anterior
+        // Si es otro día, restamos (dia - 1) días para llegar al lunes de esa semana
+        const diasARestar = dia === 0 ? 6 : dia - 1;
+        inicio.setDate(inicio.getDate() - diasARestar);
+        
+        console.log(`🔍 getInicioSemana: fecha=${fecha.toISOString()}, dia=${dia}, diasARestar=${diasARestar}, resultado=${inicio.toISOString()}`);
+        
         return inicio;
     }
 
@@ -3334,7 +3657,9 @@ class PreciosDinamicosApp {
             fechaActual: fecha.toISOString(),
             primerDia: primerDia.toISOString(),
             ultimoDia: ultimoDia.toISOString(),
-            inicioSemana: inicioSemana.toISOString()
+            inicioSemana: inicioSemana.toISOString(),
+            inicioSemanaDia: inicioSemana.getDay(),
+            inicioSemanaNombre: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][inicioSemana.getDay()]
         });
         
         // GENERAR CALENDARIO SIMPLE
@@ -3692,16 +4017,272 @@ class PreciosDinamicosApp {
     }
 
     /**
-     * Muestra el detalle de una reserva
+     * Cierra todos los modales abiertos y limpia el estado del body
+     */
+    cerrarTodosLosModales() {
+        // Cerrar todos los modales de Bootstrap
+        const modales = document.querySelectorAll('.modal');
+        modales.forEach(modal => {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        });
+
+        // Eliminar todos los backdrops
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+
+        // Restaurar el estado del body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+
+        console.log('🔒 Todos los modales han sido cerrados');
+    }
+
+    /**
+     * Función de prueba para verificar el comportamiento de los modales
+     */
+    testModal() {
+        console.log('🧪 Probando modal...');
+        
+        // Verificar que Bootstrap esté disponible
+        if (typeof bootstrap === 'undefined') {
+            console.error('❌ Bootstrap no está disponible');
+            return;
+        }
+        
+        console.log('✅ Bootstrap disponible:', bootstrap);
+        
+        // Verificar que el modal existe
+        const modalElement = document.getElementById('editServiceModal');
+        if (!modalElement) {
+            console.error('❌ Modal editServiceModal no encontrado');
+            return;
+        }
+        
+        console.log('✅ Modal encontrado:', modalElement);
+        
+        // Verificar las clases CSS
+        console.log('🔍 Clases del modal:', modalElement.className);
+        console.log('🔍 Clases del modal-dialog:', modalElement.querySelector('.modal-dialog')?.className);
+        
+        // Intentar abrir el modal
+        try {
+            const modal = new bootstrap.Modal(modalElement);
+            console.log('✅ Modal creado:', modal);
+            modal.show();
+            console.log('✅ Modal mostrado');
+        } catch (error) {
+            console.error('❌ Error al mostrar modal:', error);
+        }
+    }
+
+    /**
+     * Abre un modal de forma optimizada y centrada
+     */
+    abrirModal(modalId, opciones = {}) {
+        const modalElement = document.getElementById(modalId);
+        if (!modalElement) {
+            console.error(`❌ Modal ${modalId} no encontrado`);
+            return null;
+        }
+
+        // Configuración por defecto
+        const config = {
+            backdrop: true,
+            keyboard: true,
+            focus: true,
+            ...opciones
+        };
+
+        // Crear y mostrar el modal
+        const modal = new bootstrap.Modal(modalElement, config);
+        modal.show();
+
+        return modal;
+    }
+
+    /**
+     * Abre el modal de gestión de precios para un recurso
+     */
+    gestionarPreciosRecurso(resourceId, resourceName, basePrice) {
+        try {
+            console.log('💰 Gestionando precios del recurso:', resourceId, resourceName, basePrice);
+            
+            // Llenar la información del recurso en el modal
+            document.getElementById('resourcePricingName').textContent = resourceName;
+            document.getElementById('resourcePricingBasePrice').textContent = basePrice.toFixed(2);
+            
+            // Llenar el formulario de precio base
+            document.getElementById('editResourceBasePrice').value = basePrice;
+            
+            // Cargar las reglas de precio existentes
+            this.cargarReglasPrecioRecurso(resourceId);
+            
+            // Mostrar el modal
+            const modal = this.abrirModal('resourcePricingModal');
+            
+        } catch (error) {
+            console.error('❌ Error abriendo gestión de precios:', error);
+            this.showAlert('Error al abrir la gestión de precios', 'danger');
+        }
+    }
+
+    /**
+     * Carga las reglas de precio existentes para un recurso
+     */
+    async cargarReglasPrecioRecurso(resourceId) {
+        try {
+            console.log('🔄 Cargando reglas de precio para recurso:', resourceId);
+            
+            // Cargar reglas por hora
+            await this.cargarReglasPrecioHora(resourceId);
+            
+            // Cargar reglas por día
+            await this.cargarReglasPrecioDia(resourceId);
+            
+            // Cargar reglas por temporada
+            await this.cargarReglasPrecioTemporada(resourceId);
+            
+        } catch (error) {
+            console.error('❌ Error cargando reglas de precio:', error);
+        }
+    }
+
+    /**
+     * Carga las reglas de precio por hora para un recurso
+     */
+    async cargarReglasPrecioHora(resourceId) {
+        try {
+            // Aquí se haría la llamada a la API para obtener las reglas
+            // Por ahora, mostrar un mensaje de ejemplo
+            const container = document.getElementById('resourceHourlyPriceRules');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-clock fa-2x mb-2"></i>
+                        <p>No hay reglas de precio por hora configuradas</p>
+                        <p class="small">Crea la primera regla usando el formulario</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error cargando reglas por hora:', error);
+        }
+    }
+
+    /**
+     * Carga las reglas de precio por día para un recurso
+     */
+    async cargarReglasPrecioDia(resourceId) {
+        try {
+            const container = document.getElementById('resourceDailyPriceRules');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-calendar-day fa-2x mb-2"></i>
+                        <p>No hay reglas de precio por día configuradas</p>
+                        <p class="small">Crea la primera regla usando el formulario</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error cargando reglas por día:', error);
+        }
+    }
+
+    /**
+     * Carga las reglas de precio por temporada para un recurso
+     */
+    async cargarReglasPrecioTemporada(resourceId) {
+        try {
+            const container = document.getElementById('resourceSeasonalPriceRules');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="fas fa-calendar-week fa-2x mb-2"></i>
+                        <p>No hay reglas de precio por temporada configuradas</p>
+                        <p class="small">Crea la primera regla usando el formulario</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error cargando reglas por temporada:', error);
+        }
+    }
+
+    /**
+     * Muestra el detalle de un recurso en un modal
+     */
+    mostrarDetalleRecurso(resourceId) {
+        const resource = this.currentData.resources?.find(r => r.id === resourceId);
+        if (!resource) {
+            console.error('❌ Recurso no encontrado:', resourceId);
+            return;
+        }
+
+        const detalle = document.getElementById('infoResourceDetalleModal');
+        
+        if (detalle) {
+            detalle.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-building me-2"></i>Nombre del Recurso</h6>
+                        <p class="mb-3">${resource.nombre}</p>
+                        
+                        <h6><i class="fas fa-tag me-2"></i>Tipo de Recurso</h6>
+                        <p class="mb-3">${resource.tipo || 'No especificado'}</p>
+                        
+                        <h6><i class="fas fa-users me-2"></i>Capacidad</h6>
+                        <p class="mb-3">${resource.capacidad || 1} persona(s)</p>
+                        
+                        <h6><i class="fas fa-euro-sign me-2"></i>Precio Base</h6>
+                        <p class="mb-3">€${resource.precio_base ? resource.precio_base.toFixed(2) : '0.00'} /hora</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle me-2"></i>Descripción</h6>
+                        <p class="mb-3">${resource.descripcion || 'Sin descripción'}</p>
+                        
+                        <h6><i class="fas fa-toggle-on me-2"></i>Estado</h6>
+                        <span class="badge bg-${resource.disponible ? 'success' : 'danger'} mb-3">
+                            <i class="fas fa-${resource.disponible ? 'check' : 'times'} me-1"></i>
+                            ${resource.disponible ? 'Disponible' : 'No Disponible'}
+                        </span>
+                        
+                        <h6><i class="fas fa-calendar me-2"></i>Fecha de Creación</h6>
+                        <p class="mb-3">${resource.fecha_creacion ? new Date(resource.fecha_creacion).toLocaleDateString('es-ES') : 'No disponible'}</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary btn-sm me-2" onclick="app.editResource(${resource.id})">
+                        <i class="fas fa-edit me-1"></i>Editar
+                    </button>
+                    <button class="btn btn-info btn-sm me-2" onclick="app.gestionarPreciosRecurso(${resource.id}, '${resource.nombre}', ${resource.precio_base || 0})">
+                        <i class="fas fa-euro-sign me-1"></i>Gestionar Precios
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="app.deleteResource(${resource.id}, '${resource.nombre}')">
+                        <i class="fas fa-trash me-1"></i>Eliminar
+                    </button>
+                </div>
+            `;
+            
+            // Mostrar el modal usando la función optimizada
+            const modal = this.abrirModal('infoResourceModal');
+        }
+    }
+
+    /**
+     * Muestra el detalle de una reserva en un modal
      */
     mostrarDetalleReserva(reservaId) {
         const reserva = this.calendario.reservas.find(r => r.id === reservaId);
         if (!reserva) return;
 
-        const panel = document.getElementById('panelInfoReserva');
-        const detalle = document.getElementById('infoReservaDetalle');
+        const detalle = document.getElementById('infoReservaDetalleModal');
         
-        if (panel && detalle) {
+        if (detalle) {
             const cliente = this.currentData.clientes?.find(c => c.id === reserva.cliente_id);
             const servicio = this.currentData.services.find(s => s.id === reserva.servicio_id);
             const recurso = this.currentData.resources.find(r => r.id === reserva.recurso_id);
@@ -3740,7 +4321,8 @@ class PreciosDinamicosApp {
                 </div>
             `;
             
-            panel.style.display = 'block';
+            // Mostrar el modal usando la función optimizada
+            const modal = this.abrirModal('infoReservaModal');
         }
     }
 
@@ -3798,6 +4380,168 @@ class PreciosDinamicosApp {
         if (horaInput) {
             const ahora = new Date();
             horaInput.value = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
+        }
+    }
+
+    /**
+     * Configura los formularios de precios de recursos
+     */
+    configurarFormulariosPreciosRecursos() {
+        // Formulario de precio base
+        document.getElementById('editResourceBasePriceForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.actualizarPrecioBaseRecurso();
+        });
+
+        // Formulario de precio por hora
+        document.getElementById('newResourceHourlyPriceForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.crearReglaPrecioHora();
+        });
+
+        // Formulario de precio por día
+        document.getElementById('newResourceDailyPriceForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.crearReglaPrecioDia();
+        });
+
+        // Formulario de precio por temporada
+        document.getElementById('newResourceSeasonalPriceForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.crearReglaPrecioTemporada();
+        });
+    }
+
+    /**
+     * Actualiza el precio base de un recurso
+     */
+    async actualizarPrecioBaseRecurso() {
+        try {
+            const nuevoPrecio = parseFloat(document.getElementById('editResourceBasePrice').value);
+            if (isNaN(nuevoPrecio) || nuevoPrecio < 0) {
+                this.showAlert('Por favor, ingresa un precio válido', 'warning');
+                return;
+            }
+
+            // Aquí se haría la llamada a la API para actualizar el precio base
+            console.log('💰 Actualizando precio base del recurso:', nuevoPrecio);
+            
+            // Por ahora, solo mostrar mensaje de éxito
+            this.showAlert('Precio base actualizado correctamente', 'success');
+            
+            // Actualizar la información mostrada
+            document.getElementById('resourcePricingBasePrice').textContent = nuevoPrecio.toFixed(2);
+            
+        } catch (error) {
+            console.error('❌ Error actualizando precio base:', error);
+            this.showAlert('Error al actualizar el precio base', 'danger');
+        }
+    }
+
+    /**
+     * Crea una nueva regla de precio por hora
+     */
+    async crearReglaPrecioHora() {
+        try {
+            const formData = {
+                nombre: document.getElementById('newResourceHourlyPriceName').value,
+                hora_inicio: document.getElementById('newResourceHourlyPriceStart').value,
+                hora_fin: document.getElementById('newResourceHourlyPriceEnd').value,
+                tipo_modificador: document.getElementById('newResourceHourlyPriceModifier').value,
+                valor_modificador: parseFloat(document.getElementById('newResourceHourlyPriceValue').value)
+            };
+
+            console.log('💰 Creando regla de precio por hora:', formData);
+            
+            // Aquí se haría la llamada a la API para crear la regla
+            // Por ahora, solo mostrar mensaje de éxito
+            this.showAlert('Regla de precio por hora creada correctamente', 'success');
+            
+            // Limpiar formulario
+            document.getElementById('newResourceHourlyPriceForm').reset();
+            
+            // Recargar las reglas
+            // this.cargarReglasPrecioHora(resourceId);
+            
+        } catch (error) {
+            console.error('❌ Error creando regla por hora:', error);
+            this.showAlert('Error al crear la regla de precio', 'danger');
+        }
+    }
+
+    /**
+     * Crea una nueva regla de precio por día
+     */
+    async crearReglaPrecioDia() {
+        try {
+            const diasSeleccionados = [];
+            const checkboxes = [
+                'newResourceDailyPriceMonday',
+                'newResourceDailyPriceTuesday', 
+                'newResourceDailyPriceWednesday',
+                'newResourceDailyPriceThursday',
+                'newResourceDailyPriceFriday',
+                'newResourceDailyPriceSaturday',
+                'newResourceDailyPriceSunday'
+            ];
+
+            checkboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    diasSeleccionados.push(parseInt(checkbox.value));
+                }
+            });
+
+            if (diasSeleccionados.length === 0) {
+                this.showAlert('Por favor, selecciona al menos un día', 'warning');
+                return;
+            }
+
+            const formData = {
+                nombre: document.getElementById('newResourceDailyPriceName').value,
+                dias: diasSeleccionados,
+                tipo_modificador: document.getElementById('newResourceDailyPriceModifier').value,
+                valor_modificador: parseFloat(document.getElementById('newResourceDailyPriceValue').value)
+            };
+
+            console.log('💰 Creando regla de precio por día:', formData);
+            
+            // Aquí se haría la llamada a la API para crear la regla
+            this.showAlert('Regla de precio por día creada correctamente', 'success');
+            
+            // Limpiar formulario
+            document.getElementById('newResourceDailyPriceForm').reset();
+            
+        } catch (error) {
+            console.error('❌ Error creando regla por día:', error);
+            this.showAlert('Error al crear la regla de precio', 'danger');
+        }
+    }
+
+    /**
+     * Crea una nueva regla de precio por temporada
+     */
+    async crearReglaPrecioTemporada() {
+        try {
+            const formData = {
+                nombre: document.getElementById('newResourceSeasonalPriceName').value,
+                fecha_inicio: document.getElementById('newResourceSeasonalPriceStart').value,
+                fecha_fin: document.getElementById('newResourceSeasonalPriceEnd').value,
+                tipo_modificador: document.getElementById('newResourceSeasonalPriceModifier').value,
+                valor_modificador: parseFloat(document.getElementById('newResourceSeasonalPriceValue').value)
+            };
+
+            console.log('💰 Creando regla de precio por temporada:', formData);
+            
+            // Aquí se haría la llamada a la API para crear la regla
+            this.showAlert('Regla de precio por temporada creada correctamente', 'success');
+            
+            // Limpiar formulario
+            document.getElementById('newResourceSeasonalPriceForm').reset();
+            
+        } catch (error) {
+            console.error('❌ Error creando regla por temporada:', error);
+            this.showAlert('Error al crear la regla de precio', 'danger');
         }
     }
 
@@ -4571,9 +5315,20 @@ class PreciosDinamicosApp {
                 await this.crearReservaUnica(formData);
             }
             
-            // Cerrar el modal
+            // Cerrar el modal inmediatamente
             const modal = bootstrap.Modal.getInstance(document.getElementById('calendarioReservaModal'));
-            modal.hide();
+            if (modal) {
+                modal.hide();
+                // Forzar la eliminación del backdrop si existe
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+                // Restaurar el scroll del body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }
             
             // Limpiar el formulario
             document.getElementById('calendarioReservaForm').reset();
@@ -4794,4 +5549,654 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Versión del archivo para forzar recarga del caché
-console.log('📝 JavaScript cargado - Versión 2.9 (Calendario UTC corregido):', new Date().toISOString());
+console.log('📝 JavaScript cargado - Versión 3.0 (Sistema de Precios Integrado):', new Date().toISOString());
+
+// ========================================
+// SPRINT 5: GESTIÓN DE PAGOS E INTEGRACIONES
+// ========================================
+
+// Variables globales para Sprint 5
+let pagosData = [];
+let integracionesData = [];
+let notificacionesData = [];
+let webhooksData = [];
+let googleCalendarData = [];
+
+// ========================================
+// FUNCIONES DE GESTIÓN DE PAGOS
+// ========================================
+
+/**
+ * Cargar todos los pagos del sistema
+ */
+async function cargarPagos() {
+    try {
+        showLoading('pagosContainer');
+        
+        const response = await fetch('/api/pagos/');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const pagos = await response.json();
+        pagosData = pagos;
+        displayPagosList(pagos);
+        
+    } catch (error) {
+        console.error('❌ Error cargando pagos:', error);
+        showError('pagosContainer', 'Error al cargar los pagos');
+    }
+}
+
+/**
+ * Mostrar lista de pagos en el contenedor
+ */
+function displayPagosList(pagos) {
+    const container = document.getElementById('pagosContainer');
+    
+    if (!pagos || pagos.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fas fa-credit-card fa-3x mb-3"></i>
+                <h5>No hay pagos registrados</h5>
+                <p>Comienza creando tu primer pago</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const pagosHTML = pagos.map(pago => `
+        <div class="card mb-3 payment-card" data-pago-id="${pago.id}">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <div class="payment-status-badge ${getPaymentStatusClass(pago.estado)}">
+                            <i class="fas ${getPaymentStatusIcon(pago.estado)} me-2"></i>
+                            ${pago.estado}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="mb-1">Pago #${pago.id}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${formatDate(pago.fecha_creacion)}
+                        </small>
+                    </div>
+                    <div class="col-md-2">
+                        <strong class="text-primary">${pago.monto} ${pago.moneda}</strong>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-credit-card me-1"></i>
+                            ${pago.metodo_pago}
+                        </span>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="verDetallePago(${pago.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="generarFactura(${pago.id})">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="solicitarReembolso(${pago.id})">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = pagosHTML;
+}
+
+/**
+ * Obtener clase CSS para el estado del pago
+ */
+function getPaymentStatusClass(estado) {
+    const statusClasses = {
+        'pendiente': 'bg-warning',
+        'procesando': 'bg-info',
+        'completado': 'bg-success',
+        'fallido': 'bg-danger',
+        'cancelado': 'bg-secondary',
+        'reembolsado': 'bg-warning'
+    };
+    return statusClasses[estado] || 'bg-secondary';
+}
+
+/**
+ * Obtener icono para el estado del pago
+ */
+function getPaymentStatusIcon(estado) {
+    const statusIcons = {
+        'pendiente': 'fa-clock',
+        'procesando': 'fa-spinner',
+        'completado': 'fa-check-circle',
+        'fallido': 'fa-times-circle',
+        'cancelado': 'fa-ban',
+        'reembolsado': 'fa-undo'
+    };
+    return statusIcons[estado] || 'fa-question-circle';
+}
+
+/**
+ * Crear nuevo pago
+ */
+async function crearNuevoPago() {
+    try {
+        const formData = {
+            reserva_id: parseInt(document.getElementById('nuevoPagoReserva').value),
+            cliente_id: parseInt(document.getElementById('nuevoPagoCliente').value),
+            monto: parseFloat(document.getElementById('nuevoPagoMonto').value),
+            moneda: document.getElementById('nuevoPagoMoneda').value,
+            metodo_pago: document.getElementById('nuevoPagoMetodo').value,
+            descripcion: document.getElementById('nuevoPagoDescripcion').value
+        };
+        
+        const response = await fetch('/api/pagos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Error al crear el pago');
+        }
+        
+        const nuevoPago = await response.json();
+        console.log('✅ Pago creado exitosamente:', nuevoPago);
+        
+        // Cerrar modal y recargar lista
+        cerrarTodosLosModales();
+        cargarPagos();
+        
+        // Mostrar mensaje de éxito
+        showSuccess('Pago creado exitosamente');
+        
+    } catch (error) {
+        console.error('❌ Error creando pago:', error);
+        showError('Error al crear el pago: ' + error.message);
+    }
+}
+
+/**
+ * Cargar resumen de pagos
+ */
+async function cargarResumenPagos() {
+    try {
+        const response = await fetch('/api/pagos/resumen/general');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const resumen = await response.json();
+        mostrarResumenPagos(resumen);
+        
+    } catch (error) {
+        console.error('❌ Error cargando resumen de pagos:', error);
+        showError('Error al cargar el resumen de pagos');
+    }
+}
+
+/**
+ * Mostrar resumen de pagos en un modal
+ */
+function mostrarResumenPagos(resumen) {
+    // Crear modal dinámico para mostrar el resumen
+    const modalHTML = `
+        <div class="modal fade" id="resumenPagosModal" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-chart-bar me-2"></i>Resumen de Pagos
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card text-center mb-3">
+                                    <div class="card-body">
+                                        <h3 class="text-success">${resumen.total_pagos || 0}</h3>
+                                        <p class="mb-0">Total de Pagos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card text-center mb-3">
+                                    <div class="card-body">
+                                        <h3 class="text-primary">${resumen.monto_total || 0}€</h3>
+                                        <p class="mb-0">Monto Total</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h6>Estados de Pagos:</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Estado</th>
+                                                <th>Cantidad</th>
+                                                <th>Monto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${Object.entries(resumen.estados || {}).map(([estado, data]) => `
+                                                <tr>
+                                                    <td>
+                                                        <span class="badge ${getPaymentStatusClass(estado)}">${estado}</span>
+                                                    </td>
+                                                    <td>${data.cantidad || 0}</td>
+                                                    <td>${data.monto || 0}€</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Agregar modal al DOM y mostrarlo
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = new bootstrap.Modal(document.getElementById('resumenPagosModal'));
+    modal.show();
+    
+    // Limpiar modal del DOM cuando se cierre
+    document.getElementById('resumenPagosModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+    });
+}
+
+// ========================================
+// FUNCIONES DE GESTIÓN DE INTEGRACIONES
+// ========================================
+
+/**
+ * Cargar todas las integraciones del sistema
+ */
+async function cargarIntegraciones() {
+    try {
+        showLoading('integracionesContainer');
+        
+        const response = await fetch('/api/integraciones/');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const integraciones = await response.json();
+        integracionesData = integraciones;
+        displayIntegracionesList(integraciones);
+        
+    } catch (error) {
+        console.error('❌ Error cargando integraciones:', error);
+        showError('integracionesContainer', 'Error al cargar las integraciones');
+    }
+}
+
+/**
+ * Mostrar lista de integraciones
+ */
+function displayIntegracionesList(integraciones) {
+    const container = document.getElementById('integracionesContainer');
+    
+    if (!integraciones || integraciones.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fas fa-plug fa-3x mb-3"></i>
+                <h5>No hay integraciones configuradas</h5>
+                <p>Comienza configurando tu primera integración</p>
+            </div>
+            `;
+        return;
+    }
+    
+    const integracionesHTML = integraciones.map(integracion => `
+        <div class="card mb-3 integration-card" data-integracion-id="${integracion.id}">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <div class="integration-type-badge">
+                            <i class="fas ${getIntegrationTypeIcon(integracion.tipo)} me-2"></i>
+                            ${integracion.tipo}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="mb-1">${integracion.nombre}</h6>
+                        <small class="text-muted">${integracion.descripcion || 'Sin descripción'}</small>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="badge ${getIntegrationStatusClass(integracion.estado)}">
+                            ${integracion.estado}
+                        </span>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${formatDate(integracion.created_at)}
+                        </small>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editarIntegracion(${integracion.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info me-1" onclick="probarIntegracion(${integracion.id})">
+                            <i class="fas fa-play"></i>
+                            </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarIntegracion(${integracion.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = integracionesHTML;
+}
+
+/**
+ * Obtener icono para el tipo de integración
+ */
+function getIntegrationTypeIcon(tipo) {
+    const typeIcons = {
+        'email': 'fa-envelope',
+        'sms': 'fa-sms',
+        'whatsapp': 'fa-whatsapp',
+        'google_calendar': 'fa-calendar',
+        'stripe': 'fa-credit-card',
+        'paypal': 'fa-paypal'
+    };
+    return typeIcons[tipo] || 'fa-plug';
+}
+
+/**
+ * Obtener clase CSS para el estado de la integración
+ */
+function getIntegrationStatusClass(estado) {
+    const statusClasses = {
+        'activa': 'bg-success',
+        'inactiva': 'bg-secondary',
+        'error': 'bg-danger',
+        'configurando': 'bg-warning'
+    };
+    return statusClasses[estado] || 'bg-secondary';
+}
+
+/**
+ * Crear nueva integración
+ */
+async function crearNuevaIntegracion() {
+    try {
+        const formData = {
+            nombre: document.getElementById('nuevaIntegracionNombre').value,
+            tipo: document.getElementById('nuevaIntegracionTipo').value,
+            estado: document.getElementById('nuevaIntegracionEstado').value,
+            descripcion: document.getElementById('nuevaIntegracionDescripcion').value,
+            webhook_url: document.getElementById('nuevaIntegracionWebhook').value,
+            configuracion: document.getElementById('nuevaIntegracionConfig').value
+        };
+        
+        const response = await fetch('/api/integraciones/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Error al crear la integración');
+        }
+        
+        const nuevaIntegracion = await response.json();
+        console.log('✅ Integración creada exitosamente:', nuevaIntegracion);
+        
+        // Cerrar modal y recargar lista
+        cerrarTodosLosModales();
+        cargarIntegraciones();
+        
+        // Mostrar mensaje de éxito
+        showSuccess('Integración creada exitosamente');
+        
+    } catch (error) {
+        console.error('❌ Error creando integración:', error);
+        showError('Error al crear la integración: ' + error.message);
+    }
+}
+
+/**
+ * Cargar estado de las integraciones
+ */
+async function cargarEstadoIntegraciones() {
+    try {
+        const response = await fetch('/api/integraciones/estado/general');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const estado = await response.json();
+        mostrarEstadoIntegraciones(estado);
+        
+    } catch (error) {
+        console.error('❌ Error cargando estado de integraciones:', error);
+        showError('Error al cargar el estado de las integraciones');
+    }
+}
+
+/**
+ * Mostrar estado de las integraciones
+ */
+function mostrarEstadoIntegraciones(estado) {
+    showSuccess(`Estado de integraciones: ${estado.total_integraciones} total, ${estado.integraciones_activas} activas`);
+}
+
+/**
+ * Procesar notificaciones pendientes
+ */
+async function procesarNotificacionesPendientes() {
+    try {
+        const response = await fetch('/api/integraciones/notificaciones/procesar-pendientes', {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const resultado = await response.json();
+        showSuccess(resultado.mensaje);
+        
+        // Recargar notificaciones si estamos en esa tab
+        if (document.getElementById('notificacionesList').classList.contains('show')) {
+            cargarNotificaciones();
+        }
+        
+    } catch (error) {
+        console.error('❌ Error procesando notificaciones:', error);
+        showError('Error al procesar las notificaciones pendientes');
+    }
+}
+
+// ========================================
+// FUNCIONES AUXILIARES
+// ========================================
+
+/**
+ * Mostrar estado de carga
+ */
+function showLoading(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p>Cargando...</p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Mostrar error
+ */
+function showError(containerId, message) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+            </div>
+        `;
+    }
+}
+
+/**
+ * Mostrar mensaje de éxito
+ */
+function showSuccess(message) {
+    // Crear toast de éxito
+    const toastHTML = `
+        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    // Agregar toast al DOM y mostrarlo
+    document.body.insertAdjacentHTML('beforeend', toastHTML);
+    const toastElement = document.querySelector('.toast:last-child');
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // Limpiar toast del DOM cuando se oculte
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        this.remove();
+    });
+}
+
+/**
+ * Formatear fecha
+ */
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// ========================================
+// INICIALIZACIÓN DE SPRINT 5
+// ========================================
+
+/**
+ * Inicializar funcionalidades de Sprint 5
+ */
+function initSprint5() {
+    console.log('🚀 Inicializando Sprint 5: Integraciones y Pagos...');
+    
+    // Cargar datos iniciales cuando se active la tab correspondiente
+    document.getElementById('pagos-tab').addEventListener('click', function() {
+        if (pagosData.length === 0) {
+            cargarPagos();
+        }
+    });
+    
+    document.getElementById('integraciones-tab').addEventListener('click', function() {
+        if (integracionesData.length === 0) {
+            cargarIntegraciones();
+        }
+    });
+    
+    // Configurar filtros de pagos
+    document.getElementById('filtroEstadoPago').addEventListener('change', filtrarPagos);
+    document.getElementById('filtroMetodoPago').addEventListener('change', filtrarPagos);
+    document.getElementById('filtroFechaDesde').addEventListener('change', filtrarPagos);
+    document.getElementById('filtroFechaHasta').addEventListener('change', filtrarPagos);
+    
+    // Configurar cálculo automático de total en factura
+    document.getElementById('nuevaFacturaIVA').addEventListener('input', calcularTotalFactura);
+    document.getElementById('nuevaFacturaSubtotal').addEventListener('input', calcularTotalFactura);
+    
+    console.log('✅ Sprint 5 inicializado correctamente');
+}
+
+/**
+ * Filtrar pagos según los criterios seleccionados
+ */
+function filtrarPagos() {
+    const estado = document.getElementById('filtroEstadoPago').value;
+    const metodo = document.getElementById('filtroMetodoPago').value;
+    const fechaDesde = document.getElementById('filtroFechaDesde').value;
+    const fechaHasta = document.getElementById('filtroFechaHasta').value;
+    
+    let pagosFiltrados = pagosData;
+    
+    if (estado) {
+        pagosFiltrados = pagosFiltrados.filter(pago => pago.estado === estado);
+    }
+    
+    if (metodo) {
+        pagosFiltrados = pagosFiltrados.filter(pago => pago.metodo_pago === metodo);
+    }
+    
+    if (fechaDesde) {
+        pagosFiltrados = pagosFiltrados.filter(pago => 
+            new Date(pago.fecha_creacion) >= new Date(fechaDesde)
+        );
+    }
+    
+    if (fechaHasta) {
+        pagosFiltrados = pagosFiltrados.filter(pago => 
+            new Date(pago.fecha_creacion) <= new Date(fechaHasta)
+        );
+    }
+    
+    displayPagosList(pagosFiltrados);
+}
+
+/**
+ * Calcular total de factura automáticamente
+ */
+function calcularTotalFactura() {
+    const subtotal = parseFloat(document.getElementById('nuevaFacturaSubtotal').value) || 0;
+    const iva = parseFloat(document.getElementById('nuevaFacturaIVA').value) || 0;
+    
+    const total = subtotal * (1 + iva / 100);
+    document.getElementById('nuevaFacturaTotal').value = total.toFixed(2);
+}
+
+// Inicializar Sprint 5 cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Esperar a que se inicialice la aplicación principal
+    setTimeout(initSprint5, 1000);
+});

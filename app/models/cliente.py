@@ -15,3 +15,6 @@ class Cliente(Base):
     
     # Relationships
     reservas = relationship("Reserva", back_populates="cliente")
+    pagos = relationship("Pago", back_populates="cliente")
+    facturas = relationship("Factura", back_populates="cliente")
+    notificaciones = relationship("Notificacion", back_populates="cliente")

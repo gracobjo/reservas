@@ -12,7 +12,9 @@ from .routes import (
     precio_router,
     auth_router,
     horario_router,
-    precio_dinamico_router
+    precio_dinamico_router,
+    pago_router,
+    integracion_router
 )
 
 # Crear tablas de base de datos
@@ -21,9 +23,47 @@ Base.metadata.create_all(bind=engine)
 # Crear aplicación FastAPI
 app = FastAPI(
     title=settings.app_name,
-    description="Microservicio de reservas con sistema de precios dinámicos",
-    version="1.0.0",
-    debug=settings.debug
+    description="Microservicio de reservas con sistema de precios dinámicos y Sprint 5: Integraciones y Pagos",
+    version="2.0.0",
+    debug=settings.debug,
+    openapi_tags=[
+        {
+            "name": "clientes",
+            "description": "Operaciones CRUD para gestión de clientes"
+        },
+        {
+            "name": "servicios", 
+            "description": "Operaciones CRUD para gestión de servicios"
+        },
+        {
+            "name": "recursos",
+            "description": "Operaciones CRUD para gestión de recursos"
+        },
+        {
+            "name": "reservas",
+            "description": "Operaciones CRUD para gestión de reservas"
+        },
+        {
+            "name": "precios",
+            "description": "Operaciones CRUD para gestión de precios"
+        },
+        {
+            "name": "horarios",
+            "description": "Operaciones CRUD para gestión de horarios"
+        },
+        {
+            "name": "precios-dinamicos",
+            "description": "Sistema de precios dinámicos y reglas de precios"
+        },
+        {
+            "name": "pagos",
+            "description": "Sistema completo de pagos, facturas y reembolsos"
+        },
+        {
+            "name": "integraciones",
+            "description": "Sistema de integraciones externas, notificaciones y webhooks"
+        }
+    ]
 )
 
 # Configurar CORS
@@ -47,6 +87,8 @@ app.include_router(reserva_router)
 app.include_router(precio_router)
 app.include_router(horario_router)
 app.include_router(precio_dinamico_router)
+app.include_router(pago_router)
+app.include_router(integracion_router)
 
 @app.get("/")
 async def root():

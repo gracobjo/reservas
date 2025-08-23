@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sistema de Precios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>🧪 Test Sistema de Precios</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test de Funciones</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary mb-2" onclick="testCargarPrecios()">
+                            <i class="fas fa-download"></i> Cargar Precios
+                        </button>
+                        <br>
+                        <button class="btn btn-success mb-2" onclick="testAPI()">
+                            <i class="fas fa-globe"></i> Test API
+                        </button>
+                        <br>
+                        <button class="btn btn-info" onclick="testElementos()">
+                            <i class="fas fa-search"></i> Verificar Elementos
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Resultados</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultados"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Contenedor de Precios</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="preciosContainer">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-tag fa-2x mb-2"></i>
+                                <p>Contenedor listo para mostrar precios</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/precios.js"></script>
+    
+    <script>
+        function mostrarResultado(mensaje, tipo = 'info') {
+            const resultados = document.getElementById('resultados');
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo === 'error' ? 'danger' : tipo === 'success' ? 'success' : 'info'} alert-dismissible fade show`;
+            alerta.innerHTML = `
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            resultados.appendChild(alerta);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                alerta.remove();
+            }, 5000);
+        }
+        
+        function testCargarPrecios() {
+            mostrarResultado('🔄 Probando carga de precios...', 'info');
+            try {
+                if (typeof cargarPrecios === 'function') {
+                    cargarPrecios();
+                    mostrarResultado('✅ Función cargarPrecios ejecutada', 'success');
+                } else {
+                    mostrarResultado('❌ Función cargarPrecios no encontrada', 'error');
+                }
+            } catch (error) {
+                mostrarResultado(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testAPI() {
+            mostrarResultado('🌐 Probando API de precios...', 'info');
+            fetch('/api/precios/')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                })
+                .then(data => {
+                    mostrarResultado(`✅ API funcionando: ${data.length} precios encontrados`, 'success');
+                    console.log('Datos de la API:', data);
+                })
+                .catch(error => {
+                    mostrarResultado(`❌ Error en API: ${error.message}`, 'error');
+                });
+        }
+        
+        function testElementos() {
+            mostrarResultado('🔍 Verificando elementos del DOM...', 'info');
+            
+            const elementos = {
+                'preciosContainer': document.getElementById('preciosContainer'),
+                'resultados': document.getElementById('resultados')
+            };
+            
+            let html = '<ul class="list-group">';
+            for (const [nombre, elemento] of Object.entries(elementos)) {
+                const existe = !!elemento;
+                const clase = existe ? 'list-group-item-success' : 'list-group-item-danger';
+                html += `<li class="list-group-item ${clase}">
+                    <i class="fas fa-${existe ? 'check' : 'times'}"></i> ${nombre}: ${existe ? 'Encontrado' : 'No encontrado'}
+                </li>`;
+            }
+            html += '</ul>';
+            
+            document.getElementById('resultados').innerHTML = html;
+        }
+        
+        // Auto-ejecutar test de elementos al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testElementos, 1000);
+        });
+    </script>
+</body>
+</html>

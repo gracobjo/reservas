@@ -277,7 +277,7 @@ select option:disabled:hover {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Modal personalizado */
+/* Modal personalizado - SOLO APARIENCIA */
 .modal-content {
     border-radius: 15px;
     border: none;
@@ -294,6 +294,61 @@ select option:disabled:hover {
     border-top: 1px solid #dee2e6;
     background-color: #f8f9fa;
     border-radius: 0 0 15px 15px;
+}
+
+/* FORZAR CENTRADO DE MODALES */
+.modal-dialog-centered {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+}
+
+/* Asegurar que los modales se muestren correctamente */
+.modal.show {
+    display: block !important;
+}
+
+.modal.show .modal-dialog {
+    transform: translate(-50%, -50%) !important;
+}
+
+/* Estilos para las tarjetas de recursos */
+.resource-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.resource-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.resource-card .card-body {
+    padding: 1.25rem;
+}
+
+.resource-card .btn-group-vertical .btn {
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+}
+
+.resource-card .btn-group-vertical .btn:last-child {
+    margin-bottom: 0;
+}
+
+/* Badges de estado */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Iconos en las tarjetas */
+.resource-card .fas {
+    width: 16px;
+    text-align: center;
 }
 
 /* Gráficos */
@@ -2680,6 +2735,180 @@ importan
 .disponible-indicator.clickeable div {
     color: #007bff !important;
     font-weight: 500;
+}
+
+/* ======================================== */
+/* SPRINT 5: ESTILOS PARA PAGOS E INTEGRACIONES */
+/* ======================================== */
+
+/* Estilos para tarjetas de pagos */
+.payment-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff;
+}
+
+.payment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.payment-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white;
+}
+
+/* Estilos para tarjetas de integraciones */
+.integration-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid #28a745;
+}
+
+.integration-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.integration-type-badge {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white;
+}
+
+/* Estilos para tabs de integraciones */
+#integracionesTabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+#integracionesTabs .nav-link:hover {
+    color: #007bff;
+    background-color: #f8f9fa;
+}
+
+#integracionesTabs .nav-link.active {
+    color: #007bff;
+    background-color: #e7f3ff;
+    border-bottom: 3px solid #007bff;
+}
+
+/* Estilos para filtros de pagos */
+#filtroEstadoPago,
+#filtroMetodoPago,
+#filtroFechaDesde,
+#filtroFechaHasta {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#filtroEstadoPago:focus,
+#filtroMetodoPago:focus,
+#filtroFechaDesde:focus,
+#filtroFechaHasta:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Estilos para botones de acción */
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-warning:hover,
+.btn-outline-info:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para modales de Sprint 5 */
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+}
+
+/* Estilos para formularios de Sprint 5 */
+.form-control:focus,
+.form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Estilos para badges de estado */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+}
+
+/* Estilos para iconos en las tarjetas */
+.fa-credit-card,
+.fa-file-invoice,
+.fa-undo,
+.fa-plug,
+.fa-link,
+.fa-heartbeat,
+.fa-paper-plane {
+    margin-right: 0.5rem;
+}
+
+/* Estilos para mensajes de éxito/error */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+/* Estilos para tablas de resumen */
+.table-sm th,
+.table-sm td {
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Estilos para contenedores de carga */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Estilos para mensajes de estado vacío */
+.text-muted .fa-3x {
+    opacity: 0.5;
+}
+
+/* Responsive design para Sprint 5 */
+@media (max-width: 768px) {
+    .payment-card .row,
+    .integration-card .row {
+        flex-direction: column;
+    }
+    
+    .payment-card .col-md-3,
+    .integration-card .col-md-3 {
+        margin-top: 1rem;
+        text-align: center;
+    }
+    
+    #integracionesTabs .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
 }
 
 

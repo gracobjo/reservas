@@ -6,6 +6,8 @@ from .precio_routes import router as precio_router
 from .auth_routes import router as auth_router
 from .horario_routes import router as horario_router
 from .precio_dinamico_routes import router as precio_dinamico_router
+from .pago_routes import router as pago_router
+from .integracion_routes import router as integracion_router
 
 __all__ = [
     "cliente_router",
@@ -15,5 +17,7 @@ __all__ = [
     "precio_router",
     "auth_router",
     "horario_router",
-    "precio_dinamico_router"
+    "precio_dinamico_router",
+    "pago_router",
+    "integracion_router"
 ]

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..db_sqlite_clean import Base
 
@@ -13,3 +14,6 @@ class Usuario(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+    
+    # Relationships
+    reembolsos_aprobados = relationship("Reembolso", back_populates="usuario_aprobador")
